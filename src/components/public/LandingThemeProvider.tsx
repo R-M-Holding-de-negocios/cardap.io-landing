@@ -56,6 +56,7 @@ export default function LandingThemeProvider({
   const rootRef = useRef<HTMLDivElement>(null);
   const cleanupTimerRef = useRef<number | null>(null);
   const viewTransitionRef = useRef<ViewTransition | null>(null);
+  const scrollLockRef = useRef<{ html: string; body: string } | null>(null);
   const [theme, setTheme] = useState<LandingTheme>('light');
 
   useEffect(() => {
@@ -73,18 +74,27 @@ export default function LandingThemeProvider({
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
+  const releaseScrollLock = useCallback(() => {
+    const previous = scrollLockRef.current;
+    if (!previous) return;
+    document.documentElement.style.overflow = previous.html;
+    document.body.style.overflow = previous.body;
+    scrollLockRef.current = null;
+  }, []);
+
   const clearSweep = useCallback(() => {
     if (cleanupTimerRef.current !== null) window.clearTimeout(cleanupTimerRef.current);
     cleanupTimerRef.current = null;
     viewTransitionRef.current?.skipTransition();
     viewTransitionRef.current = null;
+    releaseScrollLock();
     document.documentElement.classList.remove('landing-organic-theme-transition');
     rootRef.current?.classList.remove('landing-theme-sweeping');
     rootRef.current?.style.removeProperty('--landing-theme-delay');
     rootRef.current?.querySelectorAll<HTMLElement>('[style*="--landing-theme-delay"]').forEach(element => {
       element.style.removeProperty('--landing-theme-delay');
     });
-  }, []);
+  }, [releaseScrollLock]);
 
   const toggleTheme = useCallback(() => {
     const root = rootRef.current;
@@ -112,11 +122,21 @@ export default function LandingThemeProvider({
         changeTheme();
       });
       viewTransitionRef.current = transition;
+      scrollLockRef.current = { html: html.style.overflow, body: document.body.style.overflow };
+      html.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
       const clearViewTransition = () => {
         if (viewTransitionRef.current !== transition) return;
         viewTransitionRef.current = null;
+        if (cleanupTimerRef.current !== null) window.clearTimeout(cleanupTimerRef.current);
+        cleanupTimerRef.current = null;
+        releaseScrollLock();
         html.classList.remove('landing-organic-theme-transition');
       };
+      cleanupTimerRef.current = window.setTimeout(() => {
+        transition.skipTransition();
+        clearViewTransition();
+      }, 950);
       void transition.finished.then(clearViewTransition, clearViewTransition);
       return;
     }
@@ -144,7 +164,7 @@ export default function LandingThemeProvider({
       clearSweep,
       SWEEP_DURATION + COLOR_TRANSITION_DURATION + 30,
     );
-  }, [clearSweep, theme]);
+  }, [clearSweep, releaseScrollLock, theme]);
 
   useEffect(() => clearSweep, [clearSweep]);
 
