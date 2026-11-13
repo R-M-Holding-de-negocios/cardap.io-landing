@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { ShieldCheck, Sparkles } from 'lucide-react';
 import BrandLogo from '@/components/public/BrandLogo';
 import { productUrl } from '@/lib/product-url';
 
@@ -13,11 +13,11 @@ export default function Footer() {
           <div className="md:col-span-1 space-y-4">
             <BrandLogo size={52} />
             <p className="text-sm text-muted leading-relaxed">
-              Atendimento inteligente e gestão de salão por aproximação NFC e QR Code dinâmico. Seu cliente chama em 1 clique, sua equipe atende com máxima velocidade.
+              Com o cardap.io, seus clientes consultam o menu pelo celular e sua equipe acompanha pedidos, chamadas e solicitações de atendimento em um só lugar.
             </p>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-peach border border-outline text-sm text-emerald-700">
               <ShieldCheck className="w-4 h-4" />
-              <span>100% em conformidade com a LGPD</span>
+              <span>Cardápio, pedidos e atendimento</span>
             </div>
           </div>
 
@@ -27,33 +27,33 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm text-muted">
               <li>
                 <Link href={productUrl('/recursos')} className="hover:text-ink transition-colors">
-                  Recursos & Funcionalidades
+                  Cardápio digital
                 </Link>
               </li>
               <li>
-                <Link href="/#simulador" className="hover:text-ink transition-colors">
-                  Demonstração Interativa
+                <Link href="/#como-funciona" className="hover:text-ink transition-colors">
+                  Como funciona
                 </Link>
               </li>
               <li>
-                <Link href="/#calculadora" className="hover:text-ink transition-colors">
-                  Calculadora de Giro de Mesa
+                <Link href="/#sistema" className="hover:text-ink transition-colors">
+                  Prévia do sistema
                 </Link>
               </li>
               <li>
-                <Link href={productUrl('/dashboard')} className="hover:text-ink transition-colors flex items-center gap-1.5">
+                <Link href="/#planos" className="hover:text-ink transition-colors flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Dashboard ao Vivo
+                  Planos
                 </Link>
               </li>
               <li>
-                <Link href={productUrl('/tv/est-anfc-001')} className="hover:text-ink transition-colors">
-                  Modo TV / Painel KDS
+                <Link href="/#atendimento" className="hover:text-ink transition-colors">
+                  Gestão do restaurante
                 </Link>
               </li>
               <li>
-                <Link href={productUrl('/waiter')} className="hover:text-ink transition-colors">
-                  Mobile do Garçom
+                <Link href="/#atendimento" className="hover:text-ink transition-colors">
+                  Atendimento do salão
                 </Link>
               </li>
             </ul>
@@ -66,17 +66,17 @@ export default function Footer() {
               <li>
                 <Link href={productUrl('/cadastro')} className="hover:text-ink transition-colors text-action font-semibold flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Trial Grátis 10 Dias (Pro)
+                  Criar conta e escolher plano
                 </Link>
               </li>
               <li>
-                <Link href={productUrl('/recursos#planos')} className="hover:text-ink transition-colors">
-                  Tabela Comparativa de Planos
+                <Link href={productUrl('/recursos')} className="hover:text-ink transition-colors">
+                  Ver planos e recursos
                 </Link>
               </li>
               <li>
                 <Link href={productUrl('/parceiros')} className="hover:text-ink transition-colors">
-                  Programa de Afiliados (25% Recorrente)
+                  Programa de parceiros
                 </Link>
               </li>
               <li>
@@ -97,12 +97,12 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-ink uppercase tracking-wider mb-4">Sobre a plataforma</h4>
             <div className="space-y-2 text-sm text-muted leading-relaxed">
               <p className="font-semibold text-muted">
-                Anfc Cardapios Tecnologia
+                cardap.io
               </p>
-              <p>Tecnologia 100% Brasileira • Servidores de Baixa Latência</p>
+              <p>Cardápio digital, pedidos e ferramentas de gestão para restaurantes.</p>
               <div className="pt-2">
                 <p className="text-muted text-sm">
-                  Tecnologia desenvolvida para eliminar filas, aumentar o giro das mesas e fidelizar clientes em bares e restaurantes.
+                  Ferramentas reunidas para apoiar a rotina da equipe do restaurante.
                 </p>
               </div>
             </div>
@@ -111,11 +111,11 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-sm text-muted gap-4">
-          <p>© {new Date().getFullYear()} Anfc Cardapios. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} cardap.io. Todos os direitos reservados.</p>
           <div className="flex items-center gap-6">
-            <span>Escaneou. Chamou. Chegou.</span>
+            <span>Cardápio digital e atendimento</span>
             <span>•</span>
-            <span>Seu cliente chama. Sua equipe atende.</span>
+            <span>cardap.io</span>
           </div>
         </div>
       </div>

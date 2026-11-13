@@ -1,569 +1,272 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/public/Navbar';
 import Footer from '@/components/public/Footer';
 import LiveDemoSimulator from '@/components/public/LiveDemoSimulator';
-import RoiCalculator from '@/components/public/RoiCalculator';
 import ProductPreview from '@/components/public/ProductPreview';
-import LandingBackgroundScenery from '@/components/public/LandingBackgroundScenery';
+import TextLoop from '@/components/public/react-bits/TextLoop';
+import ScrollReveal from '@/components/public/react-bits/ScrollReveal';
+import RotatingText from '@/components/public/react-bits/RotatingText';
+import PixelCard from '@/components/public/react-bits/PixelCard';
+import LandingThemeProvider from '@/components/public/LandingThemeProvider';
 import { LANDING_ICONS } from '@/lib/landing-assets';
-import { productUrl } from '@/lib/product-url';
-import {
-  Sparkles,
-  ArrowRight,
-  CheckCircle2,
-  XCircle,
-  Wifi,
-  QrCode,
-  Smartphone,
-  Tv,
-  Clock,
-  ShieldCheck,
-  ChevronRight,
-  TrendingUp,
-  DollarSign,
-  Play,
-  HelpCircle,
-  Star
-} from 'lucide-react';
+import { planSignupUrl, productUrl, type PlanId } from '@/lib/product-url';
+import { Sparkles, ArrowRight, CheckCircle2, QrCode, Smartphone, Tv, HelpCircle, Utensils, ClipboardList, Users, PackageCheck, ShoppingBag } from 'lucide-react';
+
+const faqs = [
+  { q: 'O cliente precisa instalar um aplicativo?', a: 'Não. O cardápio abre no navegador do celular após a leitura do QR Code ou a aproximação por NFC.' },
+  { q: 'O cliente pode pedir pelo próprio celular?', a: 'Sim. Ele pode selecionar produtos, ajustar quantidades, adicionar observações e enviar o pedido associado à mesa.' },
+  { q: 'O sistema processa pagamentos pela internet?', a: 'O cardap.io permite que o cliente solicite a conta pelo cardápio. O registro do pagamento é feito pela equipe do estabelecimento.' },
+  { q: 'A equipe consegue acompanhar chamadas e pedidos?', a: 'Sim. As solicitações aparecem em uma fila para a equipe acompanhar, aceitar e concluir.' },
+  { q: 'O cardap.io tem integração com iFood?', a: 'A integração com iFood ainda está em validação. A disponibilidade para cada restaurante será confirmada antes da ativação.' },
+];
 
 export default function HomePage() {
-  const [annualBilling, setAnnualBilling] = useState(true);
+  useEffect(() => {
+    const page = document.querySelector('.home-theme');
+    const targets = page?.querySelectorAll('main :is(h1,h2,h3,h4,p,li)');
+    if (!page || !targets?.length) return;
+    page.classList.add('home-text-entrances-ready');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('home-text-entered');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
+
+    targets.forEach(target => observer.observe(target));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="presentation-theme home-theme min-h-screen bg-cream flex flex-col relative overflow-hidden">
+    <LandingThemeProvider>
       <Navbar />
-
       <main className="flex-1 relative">
-        {/* Composição Cênica Despojada de Background */}
-        <LandingBackgroundScenery />
 
-        {/* HERO SECTION */}
-        <section className="relative pt-12 pb-20 lg:pt-20 lg:pb-24 bg-transparent border-b border-outline">
-
-          <div className="max-w-[1120px] mx-auto px-5 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center max-w-4xl mx-auto space-y-6">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-action border border-orange-200 text-sm sm:text-sm font-bold shadow-sm">
-                <Sparkles className="w-4 h-4 text-action" />
-                <span>Um toque aproxima seu restaurante do cliente</span>
+        {/* 1. Abertura */}
+        <section className="relative overflow-hidden border-b border-outline bg-cream py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto grid max-w-[1120px] grid-cols-1 items-center gap-10 px-5 sm:px-6 lg:grid-cols-[1.08fr_.92fr] lg:px-8">
+            <div className="relative z-10 max-w-2xl">
+              <div className="mb-5 inline-flex min-h-10 items-center gap-2 rounded-full border border-orange-200 bg-white/80 px-4 py-2 text-sm font-bold text-action shadow-sm" role="img" aria-label="Cardápio digital, pedidos na mesa e atendimento do salão">
+                <Sparkles className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <RotatingText texts={['Cardápio digital', 'Pedidos na mesa', 'Atendimento do salão']} effect="slide" direction="up" rotationInterval={2600} splitBy="words" splitLevelClassName="overflow-hidden" mainClassName="text-action" aria-hidden="true" />
               </div>
-
-              {/* Headline */}
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-muted tracking-tight leading-[1.08]">
-                Escaneou. Chamou.{' '}
-                <span className="text-action bg-peach">
-                  Chegou.
-                </span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-lg sm:text-xl text-muted max-w-2xl mx-auto font-medium leading-relaxed">
-                Seu cardápio, seus pratos e sua equipe mais perto do cliente. Com QR Code e NFC, o atendimento começa na mesa.
-              </p>
-
-              {/* CTA buttons */}
-              <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link
-                  href={productUrl('/cadastro')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-action text-ink font-extrabold text-base sm:text-lg px-8 py-4 rounded-2xl shadow-card transition-all"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  <span>Criar meu cardápio</span>
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-
-                <Link
-                  href={productUrl('/m/v1-anfc-mesa04-eWLauJ46')}
-                  target="_blank"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-cream text-muted font-bold text-base px-6 py-4 rounded-full border border-outline shadow-sm transition-all"
-                >
-                  <Smartphone className="w-5 h-5 text-action" />
-                  <span>Ver demonstração</span>
-                </Link>
-              </div>
-
-              {/* Micro-assurances */}
-              <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-sm sm:text-sm font-semibold text-muted">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-                  <span>Sem cartão de crédito</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-                  <span>Sem baixar nenhum aplicativo</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-                  <span>Funciona em qualquer smartphone</span>
-                </div>
+              <h1 className="max-w-[760px] text-4xl font-black leading-[1.04] tracking-tight text-muted sm:text-6xl lg:text-7xl">Um atendimento mais organizado começa pelo <span className="rounded-sm bg-peach px-1 text-action">cardápio</span></h1>
+              <p className="mt-6 max-w-[610px] text-lg font-medium leading-relaxed text-muted sm:text-xl">Com o cardap.io, seus clientes consultam o menu pelo celular e sua equipe acompanha pedidos, chamadas e solicitações de atendimento em um só lugar.</p>
+              <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                <Link href={productUrl('/cadastro')} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-action px-7 py-3.5 text-base font-extrabold text-ink shadow-card transition-all sm:w-auto"><Sparkles className="h-5 w-5" /><span>Criar meu cardápio</span><ArrowRight className="h-5 w-5" /></Link>
+                <Link href="#como-funciona" className="hero-secondary inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-outline bg-white px-6 py-3 text-base font-bold text-muted transition-all hover:bg-peach sm:w-auto"><Smartphone className="h-5 w-5 text-action" /><span>Veja como funciona</span></Link>
               </div>
             </div>
+            <div className="relative mx-auto flex min-h-[300px] w-full max-w-[460px] items-center justify-center sm:min-h-[390px]">
+              <div className="absolute inset-[7%] rotate-[-4deg] rounded-[44%_56%_52%_48%/48%_40%_60%_52%] border border-orange-200 bg-peach/70" aria-hidden="true" />
+              <Image src={LANDING_ICONS.dishPlate.src} alt="" width={520} height={520} priority className="relative z-10 w-[88%] -rotate-3 object-contain drop-shadow-sm animate-float-slow" />
+              <Image src={LANDING_ICONS.drink.src} alt="" width={128} height={128} className="absolute right-0 top-2 z-20 w-20 rotate-6 object-contain drop-shadow-sm sm:right-2 sm:top-5 sm:w-28 animate-float-slow-delayed" />
+            </div>
+          </div>
+        </section>
 
+        <div className="border-b border-outline bg-peach py-4 sm:py-5">
+          <TextLoop text="Cardápio digital Pedidos na mesa Atendimento do salão Gestão do restaurante" shape="line" speed={120} direction="forward" separator="✦" tilt={-8} fontSize={40} fontWeight={750} letterSpacing={1} ribbon ribbonColor="#FF5A36" ribbonWidth={72} edgeFade={0} cross crossAngle={17} draggable color="#120F17" pauseOnHover className="landing-text-loop mx-auto max-w-[1120px] px-5" />
+        </div>
+
+        {/* 2. Como funciona */}
+        <section id="como-funciona" className="py-16 sm:py-24">
+          <div className="mx-auto max-w-[1120px] px-5 sm:px-6 lg:px-8">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-3 inline-block rounded-full bg-orange-100 px-3 py-1 text-sm font-bold uppercase tracking-wider text-action">Como funciona</span>
+              <ScrollReveal containerClassName="text-3xl font-black tracking-tight text-muted sm:text-5xl" mode="enter" effect="rise" baseRotation={0} stagger={0.08} duration={0.65} enableBlur={false}>Do primeiro acesso ao atendimento</ScrollReveal>
+            </div>
+            <div className="grid grid-cols-1 gap-0 border-t border-b border-orange-200 md:grid-cols-3">
+              {[
+                { Icon: QrCode, title: 'O cliente abre o cardápio', text: 'Ele aponta a câmera para o QR Code ou aproxima o celular da etiqueta NFC. O menu abre no navegador, sem precisar baixar um aplicativo.' },
+                { Icon: Utensils, title: 'Escolhe e envia o pedido', text: 'O cliente navega pelas categorias e envia a solicitação pelo próprio celular.' },
+                { Icon: ClipboardList, title: 'Sua equipe acompanha', text: 'A equipe recebe as solicitações e dá andamento ao atendimento.' },
+              ].map(({ Icon, title, text }, index) => (
+                <article key={title} className="relative border-orange-200 py-7 md:px-7 md:py-8 md:first:pl-0 md:last:pr-0 md:[&:not(:last-child)]:border-r">
+                  <div className="mb-5 flex items-center gap-3 text-action"><span className="font-serif text-4xl font-black">0{index + 1}</span><Icon className="h-5 w-5" aria-hidden="true" /></div>
+                  <h3 className="text-lg font-black text-ink">{title}</h3>
+                  <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted">{text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 3. Cardápio digital e pedidos */}
+        <section className="border-y border-outline bg-white py-16 sm:py-24">
+          <div className="mx-auto grid max-w-[1120px] grid-cols-1 items-start gap-10 px-5 sm:px-6 lg:grid-cols-[1fr_.9fr] lg:gap-16 lg:px-8">
+            <div>
+              <span className="mb-3 inline-block rounded-full bg-cream px-3 py-1 text-sm font-bold uppercase tracking-wider text-muted">Cardápio digital</span>
+              <ScrollReveal containerClassName="text-3xl font-black tracking-tight text-muted sm:text-5xl" mode="enter" effect="rise" baseRotation={0} stagger={0.07} duration={0.6} enableBlur={false}>Um menu fácil de consultar e simples de atualizar</ScrollReveal>
+              <p className="mt-4 max-w-xl leading-relaxed text-muted">Organize categorias e produtos com fotos, vídeos, disponibilidade e informações que ajudam o cliente a escolher. Personalize o visual do cardápio e mantenha as opções atualizadas para quem acessa pelo celular.</p>
+              <p className="mt-6 max-w-xl leading-relaxed text-muted">O cliente monta o pedido, ajusta quantidades, adiciona observações e envia pelo cardápio. A solicitação fica associada à visita da mesa para a equipe acompanhar o atendimento.</p>
+              <p className="mt-3 max-w-xl leading-relaxed text-muted">Também é possível chamar um garçom ou pedir a conta pelo celular.</p>
+            </div>
+            <div className="border-l-2 border-action pl-6 sm:pl-8">
+              <h3 className="mb-5 text-xl font-black text-ink">Tudo o que o cliente precisa para escolher</h3>
+              <ul className="space-y-4">{['Categorias e produtos organizados para celular.', 'Fotos, vídeos e informações para apresentar cada item.', 'Disponibilidade atualizada para evitar pedidos de produtos indisponíveis.'].map(text => <li key={text} className="flex items-start gap-3 text-muted"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-action"/><span>{text}</span></li>)}</ul>
+              <div className="mt-8 flex items-start gap-3 border-t border-outline pt-5 text-muted"><ShoppingBag className="mt-0.5 h-5 w-5 shrink-0 text-action"/><p><strong className="text-ink">Pedido associado à mesa.</strong> Produtos, quantidades e observações chegam reunidos para a equipe acompanhar.</p></div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. Atendimento e tempo */}
+        <section id="atendimento" className="py-16 sm:py-24">
+          <div className="mx-auto max-w-[1120px] px-5 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-16">
+              <div>
+                <span className="mb-3 inline-block rounded-full bg-orange-100 px-3 py-1 text-sm font-bold uppercase tracking-wider text-action">Atendimento do salão</span>
+                <ScrollReveal containerClassName="text-3xl font-black tracking-tight text-muted sm:text-5xl" mode="enter" effect="rise" baseRotation={0} stagger={0.07} duration={0.6} enableBlur={false}>Sua equipe acompanha o que precisa de atenção</ScrollReveal>
+                <p className="mt-4 leading-relaxed text-muted">Pedidos e chamadas ficam organizados em uma fila de atendimento. A equipe pode aceitar e concluir solicitações, enquanto uma tela de acompanhamento ajuda a visualizar o movimento do salão.</p>
+                <p className="mt-3 leading-relaxed text-muted">Garçons e equipe acompanham as solicitações pelo celular. Uma tela na TV pode exibir a fila de atendimento do estabelecimento.</p>
+              </div>
+              <div className="border-y-2 border-ink bg-peach/70 px-6 py-5 sm:px-9 sm:py-7">
+                <div className="mb-4 flex items-center gap-3"><Tv className="h-6 w-6 text-action"/><h3 className="text-xl font-black text-ink">Fila de atendimento</h3></div>
+                <ol className="divide-y divide-orange-200">{['Pedidos', 'Chamadas de garçom', 'Pedidos de conta'].map((item, index) => <li key={item} className="flex items-center gap-4 py-3"><span className="font-serif text-2xl font-black text-action">0{index + 1}</span><span className="font-semibold text-muted">{item}</span></li>)}</ol>
+              </div>
+            </div>
+            <div className="mt-14 grid grid-cols-1 items-start gap-4 border-t border-orange-200 pt-7 sm:grid-cols-[.65fr_1fr] sm:gap-10">
+              <div><span className="text-sm font-bold uppercase tracking-wider text-action">Rotina do restaurante</span><h3 className="mt-2 text-2xl font-black tracking-tight text-ink sm:text-3xl">Mais tempo para cuidar do restaurante</h3></div>
+              <div><p className="text-lg font-bold text-action">Menos tempo procurando informações. Mais tempo no salão.</p><p className="mt-3 leading-relaxed text-muted">No painel, gestores podem consultar relatórios por período ou turno e exportar os dados em CSV para acompanhar a operação.</p></div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. Gestão, iFood e parceiros */}
+        <section className="border-y border-outline bg-white py-16 sm:py-24">
+          <div className="mx-auto max-w-[1120px] px-5 sm:px-6 lg:px-8">
+            <div className="mb-10 max-w-3xl">
+              <span className="mb-3 inline-block rounded-full bg-cream px-3 py-1 text-sm font-bold uppercase tracking-wider text-muted">Gestão do restaurante</span>
+              <ScrollReveal containerClassName="text-3xl font-black tracking-tight text-muted sm:text-5xl" mode="enter" effect="rise" baseRotation={0} stagger={0.07} duration={0.6} enableBlur={false}>Acompanhe a operação em um só lugar</ScrollReveal>
+              <p className="mt-4 leading-relaxed text-muted">Gerencie mesas, cardápio e equipe pelo painel. As permissões variam conforme o perfil de acesso, para que cada pessoa encontre as ferramentas adequadas à sua função.</p>
+            </div>
+            <div className="landing-capabilities-marquee overflow-hidden border-y border-orange-200 py-6" aria-label="Recursos de gestão">
+              <div className="landing-capabilities-track flex w-max">
+                {[0, 1].map(copy => <div key={copy} className="grid grid-cols-2 gap-x-5 gap-y-4 px-5 md:grid-cols-4" aria-hidden={copy === 1 ? true : undefined}>{[
+                  { Icon: Users, label: 'Mesas, cardápio e equipe' },
+                  { Icon: ClipboardList, label: 'Relatórios do movimento' },
+                  { Icon: PackageCheck, label: 'Estoque e fornecedores' },
+                  { Icon: ShoppingBag, label: 'Compras, recebimentos e devoluções' },
+                ].map(({ Icon, label }) => <div key={label} className="flex min-w-[210px] items-start gap-3 py-2 md:min-w-[250px]"><Icon className="mt-0.5 h-5 w-5 shrink-0 text-action"/><span className="text-sm font-bold leading-relaxed text-muted">{label}</span></div>)}</div>)}
+              </div>
+            </div>
+            <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
+              <article className="border-l-2 border-action pl-5 sm:pl-7"><span className="text-sm font-bold uppercase tracking-wider text-action">Integração iFood</span><h3 className="mt-2 text-xl font-black text-ink">Integração em validação</h3><p className="mt-3 leading-relaxed text-muted">A conexão de cada loja depende da validação e configuração necessárias no iFood. A disponibilidade será confirmada antes da ativação.</p></article>
+              <article className="border-l-2 border-orange-200 pl-5 sm:pl-7"><span className="text-sm font-bold uppercase tracking-wider text-action">Programa de parceiros</span><h3 className="mt-2 text-xl font-black text-ink">Indique o cardap.io e acompanhe sua parceria</h3><p className="mt-3 leading-relaxed text-muted">O programa aproxima o cardap.io de profissionais e empresas que atendem restaurantes. O portal de parceiros permite acompanhar informações da parceria.</p><Link href={productUrl('/parceiros')} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-action px-5 py-2.5 font-bold text-ink">Conheça o programa<ArrowRight className="h-4 w-4"/></Link></article>
+            </div>
+          </div>
+        </section>
+        {/* 6. Prévia do sistema e demonstração */}
+        <section id="sistema" className="border-y border-outline bg-cream py-16 sm:py-24">
+          <div className="mx-auto max-w-[1120px] px-5 sm:px-6 lg:px-8">
+            <div className="mx-auto mb-10 max-w-3xl text-center">
+              <span className="mb-3 inline-block rounded-full bg-white px-3 py-1 text-sm font-bold uppercase tracking-wider text-action">Prévia do sistema</span>
+              <ScrollReveal containerClassName="text-3xl font-black tracking-tight text-muted sm:text-5xl" mode="enter" effect="rise" baseRotation={0} stagger={0.07} duration={0.6} enableBlur={false}>Veja como o cardap.io funciona na prática</ScrollReveal>
+              <p className="mt-4 leading-relaxed text-muted">Conheça as telas de cardápio, atendimento e gestão para entender como as ferramentas se conectam à rotina do restaurante.</p>
+            </div>
             <ProductPreview />
-
-            {/* Quick Live Preview Cards */}
-            <div className="mt-14 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl border border-outline shadow-card transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-orange-100 text-action flex items-center justify-center mb-4">
-                  <QrCode className="w-6 h-6" />
-                </div>
-                <h3 className="font-black text-ink text-lg">NFC & QR Code Dinâmico</h3>
-                <p className="text-muted text-sm mt-1 leading-relaxed">
-                  Adesivos programáveis NTAG213/215 ou displays de acrílico elegantes com tokens de segurança exclusivos.
-                </p>
+            <div className="mt-12 border-t border-orange-200 pt-10">
+              <div className="mx-auto mb-6 max-w-3xl text-center">
+                <span className="mb-2 inline-block text-sm font-bold uppercase tracking-wider text-action">Demonstração interativa</span>
+                <p className="text-muted">Avance pelas etapas para ver como uma solicitação percorre a equipe.</p>
               </div>
-
-              <div className="bg-white p-6 rounded-2xl border border-outline shadow-card transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-peach text-action flex items-center justify-center mb-4 border border-outline/30">
-                  <Clock className="w-6 h-6" />
-                </div>
-                <h3 className="font-black text-ink text-lg">Fila com Cronômetro</h3>
-                <p className="text-muted text-sm mt-1 leading-relaxed">
-                  Ordem de chamada com contagem de segundos (ex: 00:04s, 00:24s), garantindo atendimento justo e sem estresse.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl border border-outline shadow-card transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <h3 className="font-black text-ink text-lg">Validação Wi-Fi Anti-Trotes</h3>
-                <p className="text-muted text-sm mt-1 leading-relaxed">
-                  Captura do IP da sua rede em 1 clique. Ninguém de fora do seu restaurante consegue chamar sua equipe por engano.
-                </p>
-              </div>
+              <LiveDemoSimulator compactHeader />
             </div>
           </div>
         </section>
 
-        {/* INTERACTIVE SIMULATOR */}
-        <section className="py-16 sm:py-24 max-w-[1120px] mx-auto px-5 sm:px-6 lg:px-8">
-          <LiveDemoSimulator />
-        </section>
-
-        {/* ANTES VS DEPOIS COMPARISON TABLE */}
-        <section className="py-16 sm:py-24 bg-white border-y border-outline">
-          <div className="max-w-[1120px] mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <span className="px-3 py-1 rounded-full bg-cream text-muted text-sm font-bold uppercase tracking-wider inline-block mb-3">
-                Comparativo Operacional de Salão
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-black text-muted tracking-tight">
-                Mais clareza para sua equipe. Mais atenção com <span className="text-action">Anfc Cardapios</span>
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Operação Tradicional */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-outline space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold">
-                    <XCircle className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-muted">Operação Tradicional (Antes)</h3>
-                    <p className="text-sm text-red-600 font-bold uppercase">Ruídos, estresse e lentidão</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-white border border-red-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm">Cliente procurando o garçom</p>
-                    <p className="text-sm text-muted mt-1">
-                      Levantar as mãos, assobiar, estalar dedos ou esperar minutos com raiva até ser notado no salão cheio.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-red-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm">Equipe desorientada</p>
-                    <p className="text-sm text-muted mt-1">
-                      Garçons não sabem qual mesa chamou primeiro, atendem fora de ordem e geram atritos e reclamações.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-red-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm">Demora para fechar a conta</p>
-                    <p className="text-sm text-muted mt-1">
-                      Garçom vai à mesa perguntar a forma de pagamento, volta ao caixa, busca a maquininha e retorna. Perda de 15 a 20 minutos por mesa.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-red-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm">Zero controle gerencial</p>
-                    <p className="text-sm text-muted mt-1">
-                      O dono não sabe quanto tempo os clientes esperaram nem a produtividade de cada atendente.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Operação com Anfc Cardapios */}
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-outline space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-muted">Com o Anfc Cardapios (Depois)</h3>
-                    <p className="text-sm text-emerald-600 font-bold uppercase">Atendimento em segundos & alto giro</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-white border border-emerald-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm text-emerald-800">Chamado em 1 toque NFC / QR</p>
-                    <p className="text-sm text-muted mt-1 leading-relaxed">
-                      Aproximação instantânea do celular ou leitura de QR. Chamado acionado em 1 segundo com feedback em tempo real.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-emerald-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm text-emerald-800">Fila com cronômetro progressivo</p>
-                    <p className="text-sm text-muted mt-1 leading-relaxed">
-                      Chamados visíveis na TV e celulares da equipe com tempo exato de espera (00:04s, 00:24s). Ordem justa e transparente.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-emerald-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm text-emerald-800">Pedido de conta pelo celular</p>
-                    <p className="text-sm text-muted mt-1 leading-relaxed">
-                      Cliente escolhe Pix, Cartão ou Dinheiro. O garçom já vai direto com a maquininha correta, liberando a mesa imediatamente.
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white border border-emerald-100 shadow-sm">
-                    <p className="font-bold text-muted text-sm text-emerald-800">Métricas completas e PIN de salão</p>
-                    <p className="text-sm text-muted mt-1 leading-relaxed">
-                      Tempo Médio de Resposta (TMR) monitorado minuto a minuto. Rastreabilidade total de quem atendeu cada mesa.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* 7. Planos */}
+        <section id="planos" className="py-16 sm:py-24 max-w-[1120px] mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="px-3 py-1 rounded-full bg-orange-100 text-action text-sm font-bold uppercase tracking-wider inline-block mb-3">Planos</span>
+            <ScrollReveal containerClassName="text-3xl sm:text-5xl font-black text-muted tracking-tight">Escolha o plano para o momento do seu restaurante</ScrollReveal>
+            <p className="text-muted mt-4 leading-relaxed">Comece organizando o cardápio e os pedidos. Quando precisar de mais recursos para o salão e para a gestão, escolha um plano mais completo.</p>
           </div>
-        </section>
-
-        {/* ROI CALCULATOR SECTION */}
-        <section className="py-16 sm:py-24 max-w-[1120px] mx-auto px-5 sm:px-6 lg:px-8">
-          <RoiCalculator />
-        </section>
-
-        {/* PRICING PLANS SECTION */}
-        <section id="planos" className="py-16 sm:py-24 bg-white border-t border-outline">
-          <div className="max-w-[1120px] mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="text-center max-w-3xl mx-auto mb-12">
-              <span className="px-3.5 py-1.5 rounded-full bg-orange-100 text-action font-bold text-sm uppercase tracking-wider inline-block mb-3">
-                Preços Claros e Transparentes
-              </span>
-              <h2 className="text-3xl sm:text-5xl font-black text-muted tracking-tight">
-                Planos simples que cabem no bolso do seu restaurante
-              </h2>
-              <p className="text-muted text-base mt-3">
-                Todos os novos cadastros começam com <strong>10 dias grátis</strong> de todos os recursos do plano Pro, sem necessidade de cartão de crédito.
-              </p>
-
-              {/* Billing Cycle Toggle */}
-              <div className="mt-8 inline-flex items-center gap-3 p-1.5 rounded-2xl bg-cream border border-outline">
-                <button
-                  onClick={() => setAnnualBilling(false)}
-                  className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${
-                    !annualBilling ? 'bg-white text-muted shadow-sm' : 'text-muted hover:text-muted'
-                  }`}
-                >
-                  Mensal
-                </button>
-                <button
-                  onClick={() => setAnnualBilling(true)}
-                  className={`px-5 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 ${
-                    annualBilling ? 'bg-action text-ink shadow-sm' : 'text-muted hover:text-muted'
-                  }`}
-                >
-                  <span>Anual</span>
-                  <span className="text-sm bg-white/20 px-1.5 py-0.5 rounded-full">2 meses grátis</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-              {/* Essencial */}
-              <div className="bg-cream rounded-3xl p-8 border border-outline flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-black text-muted">Essencial</h3>
-                  <p className="text-sm text-muted mt-1">Para bares e cafeterias de pequeno porte</p>
-                  <div className="mt-6 mb-6">
-                    <span className="text-4xl font-black text-muted">
-                      R$ {annualBilling ? '49,92' : '59,90'}
-                    </span>
-                    <span className="text-sm text-muted">/mês</span>
-                    {annualBilling && (
-                      <p className="text-sm text-emerald-600 font-bold mt-1">Faturado R$ 599,00 anualmente</p>
-                    )}
-                  </div>
-
-                  <ul className="space-y-3 text-sm sm:text-sm text-muted border-t border-outline pt-6">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Até <strong>20 mesas</strong> cadastradas</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Até <strong>5 garçons/usuários</strong></span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Chamados em tempo real & Modo TV</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Cardápio digital com fotos em HD</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Validação Wi-Fi anti-trotes</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Até 2 botões customizados</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="pt-8">
-                  <Link
-                    href={productUrl('/cadastro?plano=essential')}
-                    className="w-full block text-center py-3.5 rounded-xl font-bold text-sm bg-white border border-outline text-muted hover:bg-cream transition-colors"
-                  >
-                    Começar no Essencial
-                  </Link>
-                </div>
-              </div>
-
-              {/* Pro (Mais Popular) */}
-              <div className="bg-peach rounded-3xl p-8 border-2 border-brand-500 text-ink flex flex-col justify-between shadow-card relative">
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-action text-ink text-sm font-black uppercase px-4 py-1 rounded-full shadow-card">
-                  MAIS POPULAR • 10 DIAS GRÁTIS
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-black text-ink">Pro</h3>
-                  <p className="text-sm text-muted mt-1">Para restaurantes, hamburguerias e pizzarias</p>
-                  <div className="mt-6 mb-6">
-                    <span className="text-4xl font-black text-ink">
-                      R$ {annualBilling ? '83,25' : '99,90'}
-                    </span>
-                    <span className="text-sm text-muted">/mês</span>
-                    {annualBilling && (
-                      <p className="text-sm text-emerald-700 font-bold mt-1">Faturado R$ 999,00 anualmente</p>
-                    )}
-                  </div>
-
-                  <ul className="space-y-3 text-sm sm:text-sm text-muted border-t border-outline pt-6">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-action shrink-0" />
-                      <span>Até <strong>50 mesas</strong> cadastradas</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-action shrink-0" />
-                      <span><strong>Equipe ilimitada</strong> com PIN individual</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-action shrink-0" />
-                      <span><strong>Vídeos Reels dos pratos</strong> no cardápio</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-action shrink-0" />
-                      <span>Botões customizados <strong>ilimitados</strong></span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-action shrink-0" />
-                      <span>Relatórios avançados e TMR de salão</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-action shrink-0" />
-                      <span>Suporte prioritário via WhatsApp</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="pt-8">
-                  <Link
-                    href={productUrl('/cadastro?plano=pro')}
-                    className="w-full block text-center py-4 rounded-xl font-extrabold text-sm bg-action text-ink shadow-card transition-all"
-                  >
-                    Testar 10 Dias Grátis Agora
-                  </Link>
-                </div>
-              </div>
-
-              {/* Business */}
-              <div className="bg-cream rounded-3xl p-8 border border-outline flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-black text-muted">Business</h3>
-                  <p className="text-sm text-muted mt-1">Grandes operações, lounges e franquias</p>
-                  <div className="mt-6 mb-6">
-                    <span className="text-4xl font-black text-muted">
-                      R$ {annualBilling ? '166,58' : '199,90'}
-                    </span>
-                    <span className="text-sm text-muted">/mês</span>
-                    {annualBilling && (
-                      <p className="text-sm text-emerald-600 font-bold mt-1">Faturado R$ 1.999,00 anualmente</p>
-                    )}
-                  </div>
-
-                  <ul className="space-y-3 text-sm sm:text-sm text-muted border-t border-outline pt-6">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Até <strong>100 mesas</strong> cadastradas</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Múltiplos ambientes e setores</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Exportação completa de relatórios</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Prioridade máxima no WhatsApp</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      <span>Acesso antecipado a novos recursos</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="pt-8">
-                  <Link
-                    href={productUrl('/cadastro?plano=business')}
-                    className="w-full block text-center py-3.5 rounded-xl font-bold text-sm bg-white border border-outline text-muted hover:bg-cream transition-colors"
-                  >
-                    Começar no Business
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center mt-12">
-              <Link
-                href={productUrl('/recursos')}
-                className="inline-flex items-center gap-2 text-sm font-bold text-action hover:text-action"
-              >
-                <span>Comparar todos os recursos dos planos</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ SECTION */}
-        <section className="py-16 sm:py-24 max-w-5xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-muted tracking-tight">
-              Perguntas Frequentes
-            </h2>
-            <p className="text-muted text-sm mt-2">
-              Tire todas as suas dúvidas sobre a operação do Anfc Cardapios no seu restaurante.
-            </p>
-          </div>
-
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {[
               {
-                q: 'O cliente precisa baixar algum aplicativo?',
-                a: 'Não! O cliente simplesmente aproxima o celular da tag NFC ou aponta a câmera para o QR Code na mesa. O navegador abre instantaneamente em menos de 1 segundo.',
+                id: 'basic',
+                name: 'Básico',
+                price: 'R$ 59',
+                description: 'Para organizar o cardápio digital e receber pedidos das mesas.',
+                features: [
+                  'Cardápio acessado por QR Code ou NFC',
+                  'Modelos Cinema, Imersivo e Editorial',
+                  'Cadastro de categorias e produtos',
+                  'Fotos, vídeos e controle de disponibilidade dos produtos',
+                  'Pedidos enviados ao painel do restaurante',
+                ],
+                action: 'Continuar com o Básico',
               },
               {
-                q: 'Como funciona a proteção contra trotes de pessoas fora do restaurante?',
-                a: 'O Anfc Cardapios possui validação de IP e Wi-Fi inteligente. O painel captura o IP da rede do seu restaurante em 1 clique. Se alguém tentar acionar botões restritos sem estar conectado ao seu Wi-Fi, o chamado é bloqueado preventivamente.',
+                id: 'essential',
+                name: 'Essencial',
+                price: 'R$ 79',
+                description: 'Para oferecer mais opções de cardápio e acompanhar o atendimento da equipe.',
+                features: [
+                  'Tudo do Básico',
+                  'Modelos Vitrine, Crush, Passarela, Conversas & Status e Reels',
+                  'Chamadas de garçom e solicitações de conta',
+                  'Fila de atendimento no celular da equipe e na TV',
+                  'Relatórios por período ou turno',
+                  'Exportação de relatórios em CSV',
+                ],
+                action: 'Continuar com o Essencial',
+                featured: true,
               },
               {
-                q: 'Como os garçons atendem aos chamados?',
-                a: 'A equipe utiliza o próprio smartphone ou telas instaladas no salão. Cada garçom tem um PIN de 4 dígitos. Ao tocar em "Assumir Mesa", o cliente é notificado na hora e o chamado sai da fila dos outros garçons.',
+                id: 'pro',
+                name: 'Pro',
+                price: 'R$ 149',
+                description: 'Para conectar o atendimento do salão à gestão do restaurante.',
+                features: [
+                  'Tudo do Essencial',
+                  'Controle de estoque e inventários',
+                  'Cadastro e acompanhamento de fornecedores',
+                  'Pedidos de compra, recebimentos e devoluções',
+                ],
+                action: 'Continuar com o Pro',
               },
-              {
-                q: 'Como funciona a gravação das tags NFC?',
-                a: 'Direto pelo painel do Anfc Cardapios no celular do administrador! Basta clicar no botão "Gravar NFC" ao lado da mesa e encostar a tag no celular para programá-la com o token de segurança daquela mesa.',
-              },
-              {
-                q: 'Como funciona o teste de 10 dias grátis?',
-                a: 'Ao criar sua conta, você recebe imediatamente 10 dias com todos os recursos do plano Pro liberados. Não pedimos cartão de crédito. Se quiser continuar após os 10 dias, basta escolher seu plano.',
-              },
-            ].map((faq, idx) => (
-              <div key={idx} className="bg-white p-6 rounded-2xl border border-outline">
-                <h4 className="font-bold text-muted text-base flex items-center gap-2">
-                  <HelpCircle className="w-5 h-5 text-action shrink-0" />
-                  <span>{faq.q}</span>
-                </h4>
-                <p className="text-muted text-sm mt-2 pl-7 leading-relaxed">{faq.a}</p>
-              </div>
-            ))}
+            ].map((plan) => {
+              const cardContent = <>
+                <div>
+                  <h3 className="text-xl font-black text-ink">{plan.name}</h3>
+                  <p className="text-sm text-muted mt-2 min-h-10">{plan.description}</p>
+                  <p className="mt-5 mb-6"><span className="text-4xl font-black text-ink">{plan.price}</span><span className="text-sm text-muted">/mês</span></p>
+                  <ul className="space-y-3 text-sm text-muted border-t border-outline pt-6">
+                    {plan.features.map((feature) => <li key={feature} className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-action shrink-0 mt-0.5"/><span>{feature}</span></li>)}
+                  </ul>
+                </div>
+                <div className="pt-8 mt-auto">
+                  <Link href={planSignupUrl(plan.id as PlanId)} className={`w-full block text-center py-3.5 rounded-xl font-bold text-sm transition-colors ${plan.featured ? 'bg-action text-ink' : 'bg-cream border border-outline text-muted hover:bg-peach'}`}>
+                    {plan.action}
+                  </Link>
+                </div>
+              </>;
+
+              const cardClass = `flex h-full w-full flex-col rounded-3xl border p-7 sm:p-8 ${plan.featured ? 'border-2 border-brand-500' : 'border-outline'}`;
+              return (
+                <PixelCard key={plan.name} className={`h-full w-full ${plan.featured ? 'bg-peach' : 'bg-white'}`} style={{ width: '100%', height: '100%' }} theme="light" trigger="hover" origin="pointer" intro colors={['#ffedd5', '#fdba74', '#f97316']} glowColor="#f97316" opacity={0.32} speed={79} revealDuration={800} spotlight={0.16} glow={0.4} fade={0.55} gap={7} pixelSize={4} radius={24}>
+                  <article className={cardClass}>{cardContent}</article>
+                </PixelCard>
+              );
+            })}
           </div>
         </section>
 
-        {/* BOTTOM CTA */}
-        <section className="bg-peach py-16 text-ink text-center relative overflow-hidden">
-          {/* Ambient Scenery: Props nos cantos do CTA */}
-          <div
-            className="hidden lg:block absolute -bottom-6 left-8 pointer-events-none select-none animate-float-slow"
-            style={{ '--scenery-rot': '-10deg' } as React.CSSProperties}
-            aria-hidden="true"
-          >
-            <div className="w-24 h-24 relative filter drop-shadow-xl">
-              <Image
-                src={LANDING_ICONS.chef.src}
-                alt=""
-                width={96}
-                height={96}
-                className="object-contain"
-              />
-            </div>
-          </div>
+        {/* 8. Perguntas frequentes */}
+        <section className="py-16 sm:py-24 bg-white border-y border-outline"><div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8"><div className="text-center mb-12"><h2 className="text-3xl sm:text-4xl font-black text-muted tracking-tight">Perguntas frequentes</h2></div><div className="space-y-4">{faqs.map(({q,a})=><div key={q} className="bg-cream p-6 rounded-2xl border border-outline"><h3 className="font-bold text-muted text-base flex items-center gap-2"><HelpCircle className="w-5 h-5 text-action shrink-0"/><span>{q}</span></h3><p className="text-muted text-sm mt-2 pl-7 leading-relaxed">{a}</p></div>)}</div></div></section>
 
-          <div
-            className="hidden lg:block absolute -top-4 right-10 pointer-events-none select-none animate-float-slow-delayed"
-            style={{ '--scenery-rot': '12deg' } as React.CSSProperties}
-            aria-hidden="true"
-          >
-            <div className="w-24 h-24 relative filter drop-shadow-xl">
-              <Image
-                src={LANDING_ICONS.menu.src}
-                alt=""
-                width={96}
-                height={96}
-                className="object-contain"
-              />
-            </div>
-          </div>
-
-          <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 space-y-6 relative z-10">
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
-              Pronto para transformar o atendimento do seu salão?
-            </h2>
-            <p className="text-muted text-lg max-w-2xl mx-auto">
-              Crie seu cardápio, organize suas mesas e experimente o atendimento conectado. Você tem 10 dias grátis para conhecer o sistema.
-            </p>
-            <div className="pt-2">
-              <Link
-                href={productUrl('/cadastro')}
-                className="inline-flex items-center gap-2 bg-white text-muted hover:bg-cream font-black text-base px-8 py-4 rounded-2xl shadow-card transition-all"
-              >
-                <Sparkles className="w-5 h-5 text-action" />
-                <span>Ativar Meus 10 Dias Grátis Agora</span>
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* 9. Encerramento */}
+        <section className="bg-peach py-16 sm:py-20 text-ink text-center relative overflow-hidden"><div className="hidden lg:block absolute -bottom-6 left-8 pointer-events-none select-none animate-float-slow" style={{'--scenery-rot':'-10deg'} as React.CSSProperties} aria-hidden="true"><div className="w-24 h-24 relative filter drop-shadow-xl"><Image src={LANDING_ICONS.chef.src} alt="" width={96} height={96} className="object-contain"/></div></div><div className="hidden lg:block absolute -top-4 right-10 pointer-events-none select-none animate-float-slow-delayed" style={{'--scenery-rot':'12deg'} as React.CSSProperties} aria-hidden="true"><div className="w-24 h-24 relative filter drop-shadow-xl"><Image src={LANDING_ICONS.menu.src} alt="" width={96} height={96} className="object-contain"/></div></div><div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 space-y-6 relative z-10"><h2 className="text-3xl sm:text-5xl font-black tracking-tight">Organize o atendimento do seu restaurante com o cardap.io</h2><p className="text-muted text-lg max-w-2xl mx-auto">Cardápio digital, pedidos, chamadas e ferramentas de gestão reunidos para apoiar a rotina da sua equipe.</p><div className="pt-2"><Link href={productUrl('/cadastro')} className="inline-flex items-center gap-2 bg-white text-muted hover:bg-cream font-black text-base px-8 py-4 rounded-2xl shadow-card transition-all"><Sparkles className="w-5 h-5 text-action"/><span>Criar conta e escolher plano</span><ArrowRight className="w-5 h-5"/></Link></div></div></section>
       </main>
-
       <Footer />
-    </div>
+    </LandingThemeProvider>
   );
 }

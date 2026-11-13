@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useLandingTheme } from '@/components/public/LandingThemeProvider';
 
 interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | number;
@@ -11,12 +12,12 @@ interface BrandLogoProps {
   textClassName?: string;
   subtitle?: string;
   variant?: 'image' | 'vector';
+  markOnly?: boolean;
 }
 
 /**
- * BrandLogo — Identidade Visual Oficial do Anfc Cardapios
- * Lockup Oficial: Monograma 'A' com Ondas de Sinal NFC + Tipografia "Anfc Cardápios" integrada (1742 x 708, proporção ~2.46:1).
- * Não renderiza texto HTML duplicado ("Anfc Cardapios"), pois a própria logo já contém o nome oficial estilizado.
+ * BrandLogo — identidade visual da landing page do cardap.io.
+ * A imagem mantém o lockup visual já usado no site.
  */
 export default function BrandLogo({
   size = 'md',
@@ -26,7 +27,9 @@ export default function BrandLogo({
   textClassName = '',
   subtitle,
   variant = 'image',
+  markOnly = false,
 }: BrandLogoProps) {
+  const { theme } = useLandingTheme();
   // Escala generosa para leitura e destaque da marca
   let dimension = 50;
   if (typeof size === 'number') {
@@ -49,7 +52,7 @@ export default function BrandLogo({
   }
 
   // Proporção oficial de aspecto do lockup (1742px x 708px = ~2.46:1)
-  const width = Math.round(dimension * 2.46);
+  const width = markOnly ? dimension : Math.round(dimension * 3);
   const height = dimension;
 
   return (
@@ -59,8 +62,8 @@ export default function BrandLogo({
         style={{ width, height }}
       >
         <Image
-          src="/logo-anfc-cardapios.png"
-          alt="Anfc Cardápios — Escaneou. Chamou. Chegou."
+          src={markOnly ? '/logo-marca.png' : theme === 'dark' ? '/logo-cardapio-dark.png' : '/logo-cardapio-light.png'}
+          alt="cardap.io"
           width={width}
           height={height}
           priority={priority}

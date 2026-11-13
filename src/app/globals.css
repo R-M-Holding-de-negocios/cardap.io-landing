@@ -89,6 +89,98 @@ body {
 .presentation-theme p { line-height: 1.6; }
 .presentation-theme .text-sm { font-size: 0.875rem; }
 .presentation-theme :is(button,a), .dashboard-theme :is(button,a) { transition-duration: 180ms; }
+.home-theme .landing-theme-toggle {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--theme-outline);
+  border-radius: 999px;
+  background: transparent;
+  padding: 0 14px;
+  color: var(--theme-ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.home-theme .landing-theme-toggle svg { width: 17px; height: 17px; flex: 0 0 auto; }
+.home-theme .landing-theme-toggle--compact { width: 44px; min-width: 44px; padding: 0; }
+/* Reveal the new theme with a gentle, continuous ripple at its lower edge. */
+@media (prefers-reduced-motion: no-preference) {
+  html.landing-organic-theme-transition::view-transition {
+    pointer-events: none;
+  }
+  html.landing-organic-theme-transition::view-transition-group(root),
+  html.landing-organic-theme-transition::view-transition-old(root) {
+    animation: none;
+  }
+  html.landing-organic-theme-transition::view-transition-new(root) {
+    animation: landing-theme-reveal 780ms linear both;
+    will-change: clip-path;
+  }
+}
+@keyframes landing-theme-reveal {
+  0% { clip-path: polygon(0 0, 100% 0, 100% 0%, 90% 0%, 80% 0%, 70% 0%, 60% 0%, 50% 0%, 40% 0%, 30% 0%, 20% 0%, 10% 0%, 0% 0%); }
+  20% { clip-path: polygon(0 0, 100% 0, 100% 21%, 90% 22%, 80% 19%, 70% 18%, 60% 20%, 50% 22%, 40% 21%, 30% 18%, 20% 19%, 10% 22%, 0% 20%); }
+  40% { clip-path: polygon(0 0, 100% 0, 100% 41%, 90% 43%, 80% 39%, 70% 37%, 60% 39%, 50% 43%, 40% 42%, 30% 38%, 20% 37%, 10% 40%, 0% 41%); }
+  60% { clip-path: polygon(0 0, 100% 0, 100% 61%, 90% 63%, 80% 59%, 70% 57%, 60% 59%, 50% 63%, 40% 62%, 30% 58%, 20% 57%, 10% 60%, 0% 61%); }
+  80% { clip-path: polygon(0 0, 100% 0, 100% 81%, 90% 83%, 80% 79%, 70% 77%, 60% 79%, 50% 83%, 40% 82%, 30% 78%, 20% 77%, 10% 80%, 0% 81%); }
+  100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 90% 100%, 80% 100%, 70% 100%, 60% 100%, 50% 100%, 40% 100%, 30% 100%, 20% 100%, 10% 100%, 0% 100%); }
+}
+.home-theme.landing-theme-sweeping,
+.home-theme.landing-theme-sweeping * {
+  transition-property: color, background, background-color, border-color, fill, stroke;
+  transition-duration: 190ms;
+  transition-timing-function: ease;
+  transition-delay: var(--landing-theme-delay, 0ms);
+}
+html[data-theme="dark"] .home-theme[data-landing-theme="dark"] {
+  color-scheme: dark;
+  --theme-cream: #121212;
+  --theme-surface: #1c1c1c;
+  --theme-peach: #30251d;
+  --theme-soft-orange: #26201b;
+  --theme-ink: #f5f0eb;
+  --theme-muted: #c5b9af;
+  --theme-action: #fb923c;
+  --theme-action-hover: #fdba74;
+  --theme-orange: #f97316;
+  --theme-on-action: #25211e;
+  --theme-outline: #75695f;
+  --theme-selected: #402b1b;
+  --theme-selected-ink: #fdba74;
+  --theme-card-shadow: 5px 5px 0 #3b2a1e;
+}
+html[data-theme="dark"] .home-theme[data-landing-theme="dark"] .landing-mobile-menu .sm-panel-item { color: #f5f0eb; }
+html[data-theme="dark"] .home-theme[data-landing-theme="dark"] .landing-mobile-menu .sm-panel-item:hover { color: #fdba74; }
+html[data-theme="dark"] .home-theme[data-landing-theme="dark"] .landing-theme-toggle { color: var(--theme-ink); }
+
+.home-theme :is(a,button) {
+  transition: transform 180ms ease, box-shadow 180ms ease, color 180ms ease, background-color 180ms ease;
+}
+.home-theme :is(a,button):active { transform: translateY(0) scale(0.98); }
+.home-theme :is(a,button):not(.pixel-card):focus-visible { transform: translateY(-1px); }
+@media (hover: hover) and (pointer: fine) {
+  .home-theme main :is(a,button):not(.pixel-card):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 rgba(194, 65, 12, 0.14);
+  }
+  .home-theme main p a:hover,
+  .home-theme nav a:hover,
+  .home-theme footer a:hover { color: var(--theme-action-hover); }
+}
+.home-theme.home-text-entrances-ready main :is(h1,h2,h3,h4,p,li) {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.home-theme.home-text-entrances-ready main :is(h1,h2,h3,h4,p,li).home-text-entered {
+  animation: home-text-enter 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes home-text-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .presentation-theme :is(button,a).bg-action, .dashboard-theme :is(button,a).bg-action, .presentation-theme .bg-action, .dashboard-theme .bg-action { background: var(--theme-orange); color: var(--theme-ink); border-radius: 999px; }
 .presentation-theme :is(button,a).bg-action, .dashboard-theme :is(button,a).bg-action { min-height: 44px; box-shadow: none; }
 .presentation-theme :is(button,a).bg-action:hover, .dashboard-theme :is(button,a).bg-action:hover { background: var(--theme-button-hover); color: var(--theme-ink); }
@@ -111,6 +203,13 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-theme.home-text-entrances-ready main :is(h1,h2,h3,h4,p,li) {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
 }
 
 .presentation-theme :is(button,a).bg-peach { border: 1px solid var(--theme-ink); border-radius: 999px; min-height: 44px; }
@@ -157,6 +256,9 @@ body {
 
 .presentation-theme :is(h1,h2,h3,h4).text-muted, .dashboard-theme :is(h1,h2,h3,h4).text-muted { color: var(--theme-action-hover); }
 .presentation-theme main p.text-sm { font-size: 1rem; line-height: 1.6; }
+
+.home-theme > nav { border-top: 0; }
+.home-theme .hero-secondary { border-color: #edc9a8; color: var(--theme-muted); }
 
 /* Keep foreground decisions on the element that owns the background. */
 .presentation-theme :is(button,a).bg-action > svg, .dashboard-theme :is(button,a).bg-action > svg { color: inherit; }
@@ -293,6 +395,77 @@ html[data-theme="dark"] :is(.presentation-theme, .dashboard-theme) figure .bg-or
 html[data-theme="dark"] :is(.presentation-theme, .dashboard-theme) p a { text-decoration: underline; text-underline-offset: 3px; }
 html[data-theme="dark"] :is(.presentation-theme, .dashboard-theme) :is(.hover\:bg-emerald-200, .hover\:bg-green-200):hover { background-color: var(--theme-success-surface); outline: 1px solid var(--theme-on-success); }
 html[data-theme="dark"] :is(.presentation-theme, .dashboard-theme) :is(input[type=checkbox], input[type=radio], input[type=range]) { accent-color: var(--theme-orange); }
+
+/* The public landing page keeps its approved cream and orange palette even
+   when the signed-in product UI is using dark mode. */
+html[data-theme="dark"] .home-theme {
+  color-scheme: light;
+  --theme-cream: #FFF8F0;
+  --theme-surface: #FFFFFF;
+  --theme-peach: #FFE2CA;
+  --theme-soft-orange: #FFF0DF;
+  --theme-ink: #25211E;
+  --theme-muted: #51463E;
+  --theme-action: #C2410C;
+  --theme-action-hover: #9A3412;
+  --theme-orange: #F97316;
+  --theme-on-action: #25211E;
+  --theme-outline: #E8D7C7;
+  --theme-selected: #FFE2CA;
+  --theme-selected-ink: #9A3412;
+  --theme-success-surface: #ECFDF5;
+  --theme-on-success: #047857;
+  --theme-danger-surface: #FFF1F2;
+  --theme-on-danger: #BE123C;
+  --theme-info-surface: #FFF7ED;
+  --theme-on-info: #9A3412;
+  --theme-warning-surface: #FFFBEB;
+  --theme-on-warning: #A16207;
+  --theme-card-shadow: 5px 5px 0 #F5C59E;
+  background: var(--theme-cream);
+  color: var(--theme-ink);
+}
+
+/* Landing theme surfaces follow the local toggle, including nested demo cards. */
+.home-theme[data-landing-theme="dark"] {
+  --theme-cream: #121212;
+  --theme-surface: #1c1c1c;
+  --theme-peach: #30251d;
+  --theme-soft-orange: #26201b;
+  --theme-ink: #f5f0eb;
+  --theme-muted: #c5b9af;
+  --theme-action: #fb923c;
+  --theme-action-hover: #fdba74;
+  --theme-orange: #f97316;
+  --theme-on-action: #25211e;
+  --theme-outline: #75695f;
+  --theme-card-shadow: 5px 5px 0 #3b2a1e;
+}
+.home-theme[data-landing-theme="dark"] #simulador :is(.bg-white, .bg-white\/70, .bg-white\/80) {
+  background-color: var(--theme-surface);
+  color: var(--theme-ink);
+  border-color: var(--theme-outline);
+}
+.home-theme[data-landing-theme="dark"] #simulador button[aria-pressed="true"] {
+  background-color: var(--theme-peach);
+}
+.home-theme[data-landing-theme="dark"] #planos .pixel-card[data-theme="light"] {
+  --pixel-card-surface: linear-gradient(145deg, #30251d 0%, #1c1c1c 100%);
+  --pixel-card-edge: rgba(245, 240, 235, 0.14);
+  --pixel-card-edge-active: rgba(251, 146, 60, 0.46);
+  --pixel-card-highlight: rgba(245, 240, 235, 0.06);
+  --pixel-card-shadow: 5px 5px 0 #3b2a1e;
+}
+.home-theme[data-landing-theme="dark"] #planos .pixel-card :is(.bg-white, .bg-peach) {
+  background-color: var(--theme-peach);
+  color: var(--theme-ink);
+}
+
+/* Keep interactive workflow cards rectangular when their selected surface is white. */
+.presentation-theme #simulador button.bg-white {
+  min-height: 0;
+  border-radius: 16px;
+}
 
 @media screen and (prefers-contrast: more) {
   html[data-theme="dark"] :is(.presentation-theme, .dashboard-theme) {

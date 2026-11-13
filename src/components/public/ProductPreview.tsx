@@ -1,47 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, Check, Clock, QrCode } from 'lucide-react';
+import { ArrowUpRight, Check, QrCode } from 'lucide-react';
 import { LANDING_ICONS } from '@/lib/landing-assets';
 import { productUrl } from '@/lib/product-url';
 
 export default function ProductPreview() {
   return (
     <div className="product-preview relative mx-auto mt-12 max-w-4xl">
-      {/* Decorative ambient scenery stickers attached to preview framing */}
-      <div
-        className="hidden lg:block absolute -top-8 -left-10 z-20 pointer-events-none select-none animate-float-slow"
-        style={{ '--scenery-rot': '-8deg' } as React.CSSProperties}
-        aria-hidden="true"
-      >
-        <div className="w-20 h-20 relative drop-shadow-md">
-          <Image
-            src={LANDING_ICONS.bell.src}
-            alt=""
-            width={80}
-            height={80}
-            className="object-contain"
-          />
-        </div>
-      </div>
-
-      <div
-        className="hidden lg:block absolute -bottom-8 -right-8 z-20 pointer-events-none select-none animate-float-slow-delayed"
-        style={{ '--scenery-rot': '10deg' } as React.CSSProperties}
-        aria-hidden="true"
-      >
-        <div className="w-24 h-24 relative drop-shadow-md">
-          <Image
-            src={LANDING_ICONS.drink.src}
-            alt=""
-            width={96}
-            height={96}
-            className="object-contain"
-          />
-        </div>
-      </div>
-
-      <div className="rounded-3xl border border-outline bg-peach p-5 sm:p-8 shadow-card relative z-10">
+      <div className="rounded-3xl border border-outline bg-peach p-5 sm:p-8 shadow-card relative">
         {/* Header da Preview */}
         <div className="flex items-center justify-between mb-5 text-ink">
           <span className="flex items-center gap-2.5 text-sm font-bold">
@@ -56,19 +23,19 @@ export default function ProductPreview() {
             </div>
             <span>Da mesa ao salão</span>
           </span>
-          <span className="text-sm text-muted font-medium">Exemplo de uso em tempo real</span>
+          <span className="text-sm text-muted font-medium">Cardápio e atendimento</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Card Esquerdo: Cardápio Real do Cliente na Mesa */}
           <Link
-            href={productUrl('/m/v1-anfc-mesa01-x8k9a')}
+            href={productUrl('/recursos')}
             className="rounded-2xl border border-outline bg-white p-4 sm:p-5 block group transition-transform hover:-translate-y-0.5"
           >
             <div className="flex justify-between items-center mb-3">
               <div>
-                <p className="font-bold text-ink">Anfc Bistro & Lounge</p>
-                <p className="text-sm text-muted">Cardápio da mesa 01</p>
+                <p className="font-bold text-ink">Cardápio do restaurante</p>
+                <p className="text-sm text-muted">Cardápio da mesa</p>
               </div>
               <div className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200/60 flex items-center justify-center">
                 <QrCode className="w-5 h-5 text-action" />
@@ -79,7 +46,7 @@ export default function ProductPreview() {
             <div className="relative h-44 sm:h-48 w-full rounded-xl overflow-hidden bg-slate-900 border border-outline/30 flex items-center justify-center">
               <Image
                 src="/images/landing/burger-real.jpg"
-                alt="Hambúrguer artesanal do cardápio Anfc"
+                alt="Produto disponível no cardápio digital"
                 fill
                 sizes="(max-width: 768px) 100vw, 400px"
                 priority
@@ -89,14 +56,14 @@ export default function ProductPreview() {
 
             <div className="flex items-start justify-between gap-3 mt-4">
               <div>
-                <p className="font-bold text-ink text-base">Anfc Monster Bacon Smash</p>
-                <p className="text-sm text-muted">Burgers artesanais com fotos em HD</p>
+              <p className="font-bold text-ink text-base">Produto do cardápio</p>
+                <p className="text-sm text-muted">Foto e informações para ajudar na escolha</p>
               </div>
-              <span className="font-black text-ink whitespace-nowrap text-base">R$ 46,90</span>
+              <span className="font-black text-ink whitespace-nowrap text-base">No cardápio</span>
             </div>
 
             <span className="mt-4 flex items-center justify-between border-t border-outline pt-3 font-bold text-action text-sm group-hover:text-amber-800">
-              Explorar o cardápio interativo
+              Conheça recursos e planos
               <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </span>
           </Link>
@@ -109,9 +76,9 @@ export default function ProductPreview() {
                 <p className="text-xs font-black text-muted uppercase tracking-wider">
                   Painel de Atendimento ao Vivo
                 </p>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Salão Ativo
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-50 text-action text-xs font-bold border border-orange-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-action" />
+                  Atendimento
                 </span>
               </div>
 
@@ -128,16 +95,14 @@ export default function ProductPreview() {
                   </div>
                   <div>
                     <span className="font-bold text-ink block">Mesa 01</span>
-                    <span className="text-xs text-muted">Chamou garçom · Salão principal</span>
+                    <span className="text-xs text-muted">Solicitação da mesa</span>
                   </div>
                 </div>
-                <span className="flex items-center gap-1 text-xs text-action font-black bg-white px-2.5 py-1.5 rounded-lg border border-outline/50 shadow-sm">
-                  <Clock className="w-3.5 h-3.5" /> 00:04s
-                </span>
+                <span className="text-xs text-action font-black bg-white px-2.5 py-1.5 rounded-lg border border-outline/50 shadow-sm">Na fila</span>
               </div>
 
               <div className="mt-4 rounded-xl border border-outline bg-cream p-3 text-xs sm:text-sm text-ink leading-relaxed">
-                A equipe visualiza a fila em ordem cronológica de chamada com cronômetro em tempo real.
+                A equipe acompanha pedidos e chamadas em uma fila de atendimento.
               </div>
             </div>
 
@@ -155,17 +120,17 @@ export default function ProductPreview() {
                     />
                   </div>
                   <h3 className="font-black text-base text-ink">
-                    Tudo flui em um só toque.
+                    Cardápio, pedidos e atendimento conectados.
                   </h3>
                 </div>
                 <p className="text-muted text-xs sm:text-sm leading-relaxed">
-                  Seu cliente vê os pratos com fotos e reels, chama o garçom e pede a conta pelo celular. Sua equipe atende sem correria pelo painel e modo TV.
+                  O cliente consulta o menu pelo celular e envia pedidos, chamadas e solicitações de conta para a equipe acompanhar.
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-outline/50 mt-3 flex items-center gap-2 text-xs font-semibold text-emerald-800">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Zero atritos. Rastreabilidade total por PIN.</span>
+              <div className="pt-3 border-t border-outline/50 mt-3 flex items-center gap-2 text-xs font-semibold text-muted">
+                <Check className="w-4 h-4 text-action shrink-0" />
+                <span>Acompanhamento das solicitações pelo painel.</span>
               </div>
             </div>
           </div>

@@ -56,9 +56,12 @@ describe('TDD: Background Cênico & Despojado com Ícones Pastel', () => {
     expect(sceneryContent).toContain('rotate');
   });
 
-  it('deve garantir que HomePage integra LandingBackgroundScenery e não usa os ícones pastel como ícones genéricos em cards', () => {
+  it('deve garantir que HomePage usa os ícones como cenário decorativo', () => {
     const homePath = path.join(process.cwd(), 'src', 'app', 'page.tsx');
     const homeContent = fs.readFileSync(homePath, 'utf-8');
-    expect(homeContent).toContain('LandingBackgroundScenery');
+    expect(homeContent).toContain('LANDING_ICONS.dishPlate.src');
+    expect(homeContent).toContain('LANDING_ICONS.drink.src');
+    expect(homeContent).toContain('LANDING_ICONS.chef.src');
+    expect(homeContent).toContain('LANDING_ICONS.menu.src');
   });
 });

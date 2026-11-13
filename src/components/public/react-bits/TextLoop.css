@@ -1,0 +1,67 @@
+.text-loop {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.text-loop--draggable {
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.text-loop-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.text-loop-text {
+  user-select: none;
+}
+
+.text-loop-measure {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.landing-text-loop {
+  left: 50%;
+  width: 100vw;
+  max-width: none;
+  margin-left: -50vw;
+  height: 250px;
+  overflow: visible;
+}
+
+.landing-text-loop .text-loop-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100vw, 1600px);
+  height: 760px;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 640px) {
+  .landing-text-loop { height: 200px; }
+  .landing-text-loop .text-loop-svg { width: max(100vw, 760px); height: 600px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-capabilities-track { animation: none; }
+}
+
+.landing-capabilities-track {
+  width: max-content;
+  animation: landing-capabilities-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.landing-capabilities-marquee:hover .landing-capabilities-track {
+  animation-play-state: paused;
+}
+
+@keyframes landing-capabilities-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
