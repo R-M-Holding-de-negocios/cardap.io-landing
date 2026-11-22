@@ -1,10 +1,13 @@
 # Dependencies
 node_modules/
+.npm-cache/
+.saas-work/
 /.pnp
 .pnp.js
 
 # Testing
 /coverage
+/test-results/
 
 # Next.js build output
 /.next/

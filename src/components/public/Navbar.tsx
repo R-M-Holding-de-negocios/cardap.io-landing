@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import BrandLogo from '@/components/public/BrandLogo';
 import { LandingThemeToggle, useLandingTheme } from '@/components/public/LandingThemeProvider';
-import { productUrl } from '@/lib/product-url';
+import { productUrl, signupUrl } from '@/lib/product-url';
 import StaggeredMenu from '@/components/public/react-bits/StaggeredMenu';
 const links = [{href: '/#como-funciona', label: 'Como funciona'}, {href: '/#sistema', label: 'O sistema'}, {href: '/#planos', label: 'Planos'}, {href: '/parceiros', label: 'Parceiros'}];
 export default function Navbar() {
@@ -13,8 +13,8 @@ export default function Navbar() {
       <Link href="/" aria-label="cardap.io — início" className="hidden lg:flex items-center gap-2.5 text-ink">
         <BrandLogo size={48} priority={true} />
       </Link>
-      <div className="hidden lg:flex gap-6 items-center">{links.map(link => <Link key={link.href} href={link.href.startsWith('/#') ? link.href : productUrl(link.href)} className="text-sm font-medium text-ink hover:text-action">{link.label}</Link>)}</div>
-      <div className="hidden lg:flex items-center gap-5"><LandingThemeToggle /><Link href={productUrl('/login')} className="text-sm font-bold text-ink">Entrar</Link><Link href={productUrl('/cadastro')} className="bg-action rounded-full px-6 py-3 inline-flex items-center gap-2 text-sm font-bold">Criar cardápio <ArrowRight className="w-4 h-4" /></Link></div>
+      <div className="hidden lg:flex gap-6 items-center">{links.map(link => <Link key={link.href} href={link.href} className="text-sm font-medium text-ink hover:text-action">{link.label}</Link>)}</div>
+      <div className="hidden lg:flex items-center gap-5"><LandingThemeToggle /><Link href={productUrl('/login')} className="text-sm font-bold text-ink">Entrar</Link><Link href={signupUrl()} className="bg-action rounded-full px-6 py-3 inline-flex items-center gap-2 text-sm font-bold">Criar cardápio <ArrowRight className="w-4 h-4" /></Link></div>
       <span className="lg:hidden" aria-hidden="true" />
     </div>
     <div className="landing-mobile-menu lg:hidden">
@@ -33,9 +33,9 @@ export default function Navbar() {
           { label: 'Como funciona', link: '/#como-funciona' },
           { label: 'O sistema', link: '/#sistema' },
           { label: 'Planos', link: '/#planos' },
-          { label: 'Parceiros', link: productUrl('/parceiros') },
+          { label: 'Parceiros', link: '/parceiros' },
           { label: 'Entrar', link: productUrl('/login') },
-          { label: 'Criar cardápio', link: productUrl('/cadastro') },
+          { label: 'Criar cardápio', link: signupUrl() },
         ]}
       />
     </div>

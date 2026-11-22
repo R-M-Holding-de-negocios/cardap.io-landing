@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    exclude: [...configDefaults.exclude, 'e2e/**', ...(process.env.LEGACY_GO_TESTS === '1' || process.env.npm_lifecycle_event === 'test:legacy' ? [] : ['test/auth-integration.test.ts'])],
+    exclude: [...configDefaults.exclude, 'e2e/**', '.saas-work/**', ...(process.env.LEGACY_GO_TESTS === '1' || process.env.npm_lifecycle_event === 'test:legacy' ? [] : ['test/auth-integration.test.ts'])],
   },
   resolve: {
     alias: {

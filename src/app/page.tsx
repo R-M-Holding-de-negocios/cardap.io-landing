@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/public/Navbar';
@@ -13,7 +13,7 @@ import RotatingText from '@/components/public/react-bits/RotatingText';
 import PixelCard from '@/components/public/react-bits/PixelCard';
 import LandingThemeProvider from '@/components/public/LandingThemeProvider';
 import { LANDING_ICONS } from '@/lib/landing-assets';
-import { planSignupUrl, productUrl, type PlanId } from '@/lib/product-url';
+import { planSignupUrl, productUrl, signupUrl, type PlanId } from '@/lib/product-url';
 import { Sparkles, ArrowRight, CheckCircle2, QrCode, Smartphone, Tv, HelpCircle, Utensils, ClipboardList, Users, PackageCheck, ShoppingBag } from 'lucide-react';
 
 const faqs = [
@@ -25,24 +25,6 @@ const faqs = [
 ];
 
 export default function HomePage() {
-  useEffect(() => {
-    const page = document.querySelector('.home-theme');
-    const targets = page?.querySelectorAll('main :is(h1,h2,h3,h4,p,li)');
-    if (!page || !targets?.length) return;
-    page.classList.add('home-text-entrances-ready');
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('home-text-entered');
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
-
-    targets.forEach(target => observer.observe(target));
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <LandingThemeProvider>
       <Navbar />
@@ -59,7 +41,7 @@ export default function HomePage() {
               <h1 className="max-w-[760px] text-4xl font-black leading-[1.04] tracking-tight text-muted sm:text-6xl lg:text-7xl">Um atendimento mais organizado começa pelo <span className="rounded-sm bg-peach px-1 text-action">cardápio</span></h1>
               <p className="mt-6 max-w-[610px] text-lg font-medium leading-relaxed text-muted sm:text-xl">Com o cardap.io, seus clientes consultam o menu pelo celular e sua equipe acompanha pedidos, chamadas e solicitações de atendimento em um só lugar.</p>
               <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                <Link href={productUrl('/cadastro')} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-action px-7 py-3.5 text-base font-extrabold text-ink shadow-card transition-all sm:w-auto"><Sparkles className="h-5 w-5" /><span>Criar meu cardápio</span><ArrowRight className="h-5 w-5" /></Link>
+                <Link href={signupUrl()} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-full bg-action px-7 py-3.5 text-base font-extrabold text-ink shadow-card transition-all sm:w-auto"><Sparkles className="h-5 w-5" /><span>Criar meu cardápio</span><ArrowRight className="h-5 w-5" /></Link>
                 <Link href="#como-funciona" className="hero-secondary inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-outline bg-white px-6 py-3 text-base font-bold text-muted transition-all hover:bg-peach sm:w-auto"><Smartphone className="h-5 w-5 text-action" /><span>Veja como funciona</span></Link>
               </div>
             </div>
@@ -158,7 +140,7 @@ export default function HomePage() {
             </div>
             <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
               <article className="border-l-2 border-action pl-5 sm:pl-7"><span className="text-sm font-bold uppercase tracking-wider text-action">Integração iFood</span><h3 className="mt-2 text-xl font-black text-ink">Integração em validação</h3><p className="mt-3 leading-relaxed text-muted">A conexão de cada loja depende da validação e configuração necessárias no iFood. A disponibilidade será confirmada antes da ativação.</p></article>
-              <article className="border-l-2 border-orange-200 pl-5 sm:pl-7"><span className="text-sm font-bold uppercase tracking-wider text-action">Programa de parceiros</span><h3 className="mt-2 text-xl font-black text-ink">Indique o cardap.io e acompanhe sua parceria</h3><p className="mt-3 leading-relaxed text-muted">O programa aproxima o cardap.io de profissionais e empresas que atendem restaurantes. O portal de parceiros permite acompanhar informações da parceria.</p><Link href={productUrl('/parceiros')} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-action px-5 py-2.5 font-bold text-ink">Conheça o programa<ArrowRight className="h-4 w-4"/></Link></article>
+              <article className="border-l-2 border-orange-200 pl-5 sm:pl-7"><span className="text-sm font-bold uppercase tracking-wider text-action">Programa de parceiros</span><h3 className="mt-2 text-xl font-black text-ink">Indique o cardap.io e acompanhe sua parceria</h3><p className="mt-3 leading-relaxed text-muted">O programa aproxima o cardap.io de profissionais e empresas que atendem restaurantes. O portal de parceiros permite acompanhar informações da parceria.</p><Link href="/parceiros" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-action px-5 py-2.5 font-bold text-ink">Conheça o programa<ArrowRight className="h-4 w-4"/></Link></article>
             </div>
           </div>
         </section>
@@ -264,7 +246,7 @@ export default function HomePage() {
         <section className="py-16 sm:py-24 bg-white border-y border-outline"><div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8"><div className="text-center mb-12"><h2 className="text-3xl sm:text-4xl font-black text-muted tracking-tight">Perguntas frequentes</h2></div><div className="space-y-4">{faqs.map(({q,a})=><div key={q} className="bg-cream p-6 rounded-2xl border border-outline"><h3 className="font-bold text-muted text-base flex items-center gap-2"><HelpCircle className="w-5 h-5 text-action shrink-0"/><span>{q}</span></h3><p className="text-muted text-sm mt-2 pl-7 leading-relaxed">{a}</p></div>)}</div></div></section>
 
         {/* 9. Encerramento */}
-        <section className="bg-peach py-16 sm:py-20 text-ink text-center relative overflow-hidden"><div className="hidden lg:block absolute -bottom-6 left-8 pointer-events-none select-none animate-float-slow" style={{'--scenery-rot':'-10deg'} as React.CSSProperties} aria-hidden="true"><div className="w-24 h-24 relative filter drop-shadow-xl"><Image src={LANDING_ICONS.chef.src} alt="" width={96} height={96} className="object-contain"/></div></div><div className="hidden lg:block absolute -top-4 right-10 pointer-events-none select-none animate-float-slow-delayed" style={{'--scenery-rot':'12deg'} as React.CSSProperties} aria-hidden="true"><div className="w-24 h-24 relative filter drop-shadow-xl"><Image src={LANDING_ICONS.menu.src} alt="" width={96} height={96} className="object-contain"/></div></div><div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 space-y-6 relative z-10"><h2 className="text-3xl sm:text-5xl font-black tracking-tight">Organize o atendimento do seu restaurante com o cardap.io</h2><p className="text-muted text-lg max-w-2xl mx-auto">Cardápio digital, pedidos, chamadas e ferramentas de gestão reunidos para apoiar a rotina da sua equipe.</p><div className="pt-2"><Link href={productUrl('/cadastro')} className="inline-flex items-center gap-2 bg-white text-muted hover:bg-cream font-black text-base px-8 py-4 rounded-2xl shadow-card transition-all"><Sparkles className="w-5 h-5 text-action"/><span>Criar conta e escolher plano</span><ArrowRight className="w-5 h-5"/></Link></div></div></section>
+        <section className="bg-peach py-16 sm:py-20 text-ink text-center relative overflow-hidden"><div className="hidden lg:block absolute -bottom-6 left-8 pointer-events-none select-none animate-float-slow" style={{'--scenery-rot':'-10deg'} as React.CSSProperties} aria-hidden="true"><div className="w-24 h-24 relative filter drop-shadow-xl"><Image src={LANDING_ICONS.chef.src} alt="" width={96} height={96} className="object-contain"/></div></div><div className="hidden lg:block absolute -top-4 right-10 pointer-events-none select-none animate-float-slow-delayed" style={{'--scenery-rot':'12deg'} as React.CSSProperties} aria-hidden="true"><div className="w-24 h-24 relative filter drop-shadow-xl"><Image src={LANDING_ICONS.menu.src} alt="" width={96} height={96} className="object-contain"/></div></div><div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 space-y-6 relative z-10"><h2 className="text-3xl sm:text-5xl font-black tracking-tight">Organize o atendimento do seu restaurante com o cardap.io</h2><p className="text-muted text-lg max-w-2xl mx-auto">Cardápio digital, pedidos, chamadas e ferramentas de gestão reunidos para apoiar a rotina da sua equipe.</p><div className="pt-2"><Link href={signupUrl()} className="inline-flex items-center gap-2 bg-white text-muted hover:bg-cream font-black text-base px-8 py-4 rounded-2xl shadow-card transition-all"><Sparkles className="w-5 h-5 text-action"/><span>Criar conta e escolher plano</span><ArrowRight className="w-5 h-5"/></Link></div></div></section>
       </main>
       <Footer />
     </LandingThemeProvider>

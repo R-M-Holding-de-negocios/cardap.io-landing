@@ -2,7 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { ShieldCheck, Sparkles } from 'lucide-react';
 import BrandLogo from '@/components/public/BrandLogo';
-import { productUrl } from '@/lib/product-url';
+import CookiePreferencesButton from '@/components/public/CookiePreferencesButton';
+import { productUrl, signupUrl } from '@/lib/product-url';
 
 export default function Footer() {
   return (
@@ -64,7 +65,7 @@ export default function Footer() {
             <h4 className="text-sm font-bold text-ink uppercase tracking-wider mb-4">Planos & Negócios</h4>
             <ul className="space-y-2.5 text-sm text-muted">
               <li>
-                <Link href={productUrl('/cadastro')} className="hover:text-ink transition-colors text-action font-semibold flex items-center gap-1">
+                <Link href={signupUrl()} className="hover:text-ink transition-colors text-action font-semibold flex items-center gap-1">
                   <Sparkles className="w-3.5 h-3.5" />
                   Criar conta e escolher plano
                 </Link>
@@ -75,12 +76,12 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href={productUrl('/parceiros')} className="hover:text-ink transition-colors">
+                <Link href="/parceiros" className="hover:text-ink transition-colors">
                   Programa de parceiros
                 </Link>
               </li>
               <li>
-                <Link href={productUrl('/partner/login')} className="hover:text-ink transition-colors">
+                <Link href="/partner/login" className="hover:text-ink transition-colors">
                   Portal do Parceiro
                 </Link>
               </li>
@@ -112,10 +113,11 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-sm text-muted gap-4">
           <p>© {new Date().getFullYear()} cardap.io. Todos os direitos reservados.</p>
-          <div className="flex items-center gap-6">
-            <span>Cardápio digital e atendimento</span>
-            <span>•</span>
-            <span>cardap.io</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+            <Link href="/termos-de-uso" className="hover:text-ink">Termos de Uso</Link>
+            <Link href="/politica-de-privacidade" className="hover:text-ink">Privacidade</Link>
+            <Link href="/politica-de-cookies" className="hover:text-ink">Cookies</Link>
+            <CookiePreferencesButton />
           </div>
         </div>
       </div>

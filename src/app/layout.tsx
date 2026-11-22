@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import CookieConsent from '@/components/public/CookieConsent';
 
 const title = "cardap.io — Cardápio digital e atendimento de mesas";
 const description =
@@ -57,6 +58,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <CookieConsent />
       </body>
     </html>
   );

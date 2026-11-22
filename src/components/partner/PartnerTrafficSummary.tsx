@@ -1,0 +1,3 @@
+export default function PartnerTrafficSummary({linkVisits,trialCount,activeSubscriptionCount}:{linkVisits:number;trialCount:number;activeSubscriptionCount:number}){
+ return <div className="grid gap-4 sm:grid-cols-3">{[['Acessos ao link',linkVisits],['Restaurantes em teste',trialCount],['Assinaturas ativas',activeSubscriptionCount]].map(([label,value])=><section key={label} className="rounded-3xl bg-white border border-outline p-6"><h2 className="text-sm font-bold text-muted">{label}</h2><p className="text-3xl font-black">{value}</p>{label==='Acessos ao link'&&<p className="text-xs text-muted">Acessos brutos; podem incluir robôs.</p>}</section>)}</div>;
+}

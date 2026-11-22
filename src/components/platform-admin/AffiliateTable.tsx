@@ -1,0 +1,7 @@
+'use client';
+export type AffiliateRow={id:string;fullName:string|null;email:string;code:string;status:string;createdAt:string;restaurantCount:number};
+const statusLabel:Record<string,string>={pending:'Pendente',approved:'Aprovado',rejected:'Rejeitado',suspended:'Suspenso'};
+export default function AffiliateTable({items,onSelect}:{items:AffiliateRow[];onSelect:(id:string)=>void}){
+ if(!items.length)return <p className="rounded-2xl border border-outline bg-white p-6 text-muted">Nenhum afiliado encontrado.</p>;
+ return <div className="overflow-x-auto rounded-2xl border border-outline bg-white"><table className="w-full min-w-[640px] text-left text-sm"><thead className="bg-peach"><tr><th className="p-4">Afiliado</th><th className="p-4">Código</th><th className="p-4">Restaurantes</th><th className="p-4">Situação</th><th className="p-4">Ação</th></tr></thead><tbody>{items.map(item=><tr key={item.id} className="border-t border-outline"><td className="p-4"><strong>{item.fullName||'Sem nome'}</strong><span className="block text-xs text-muted">{item.email}</span></td><td className="p-4 font-mono">{item.code}</td><td className="p-4">{item.restaurantCount}</td><td className="p-4">{statusLabel[item.status]||item.status}</td><td className="p-4"><button type="button" onClick={()=>onSelect(item.id)} className="min-h-11 rounded-full border border-outline px-4 font-bold text-action">Revisar</button></td></tr>)}</tbody></table></div>;
+}

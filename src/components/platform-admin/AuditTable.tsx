@@ -1,0 +1,5 @@
+export type AuditRow={id:string;actorId:string;action:string;entityType:string;entityId:string;reason:string;createdAt:string};
+export default function AuditTable({items}:{items:AuditRow[]}){
+ if(!items.length)return <p className="rounded-2xl border border-outline bg-white p-6 text-muted">Nenhuma ação registrada.</p>;
+ return <div className="overflow-x-auto rounded-2xl border border-outline bg-white"><table className="w-full min-w-[700px] text-left text-sm"><thead className="bg-peach"><tr><th className="p-4">Quando</th><th className="p-4">Operador</th><th className="p-4">Ação</th><th className="p-4">Registro</th><th className="p-4">Motivo</th></tr></thead><tbody>{items.map(item=><tr key={item.id} className="border-t border-outline"><td className="p-4">{new Date(item.createdAt).toLocaleString('pt-BR')}</td><td className="p-4 break-all">{item.actorId}</td><td className="p-4">{item.action}</td><td className="p-4 break-all">{item.entityType}: {item.entityId}</td><td className="p-4">{item.reason}</td></tr>)}</tbody></table></div>;
+}
