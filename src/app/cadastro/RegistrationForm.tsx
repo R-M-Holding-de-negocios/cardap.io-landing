@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { productUrl } from '@/lib/product-url';
-import { registrationApiUrl } from '@/lib/registration-api';
+import { registrationApiUrl, registrationErrorMessage } from '@/lib/registration-api';
 
 const plans=[
   {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.'},
@@ -40,9 +40,9 @@ export default function RegistrationForm(){
       planId,paymentMethod,...(ref.trim()?{ref:ref.trim().toUpperCase()}:{})
     };
     try{
-      const response=await fetch(apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),credentials:'omit'});
-      const result=await response.json() as {success?:boolean;error?:string};
-      if(!response.ok||result.success!==true)throw new Error(result.error||'Não foi possível criar sua conta.');
+      const response=await fetch(apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'});
+      const result=await response.json() as {success?:boolean;error?:unknown};
+      if(!response.ok||result.success!==true)throw new Error(registrationErrorMessage(result.error));
       setComplete(true);
     }catch(cause){setError(cause instanceof Error?cause.message:'Falha de conexão. Tente novamente.');}
     finally{setLoading(false);}
