@@ -60,8 +60,10 @@ export default function LandingThemeProvider({
   const [theme, setTheme] = useState<LandingTheme>('light');
 
   useEffect(() => {
+    const previousDocumentTheme = document.documentElement.dataset.theme;
     const apply = (value: string | null) => {
       const preference = resolveLandingTheme(value);
+      document.documentElement.dataset.theme = preference;
       if (rootRef.current) rootRef.current.dataset.landingTheme = preference;
       setTheme(preference);
     };
@@ -71,7 +73,11 @@ export default function LandingThemeProvider({
       if (event.key === LANDING_THEME_STORAGE_KEY) apply(event.newValue);
     };
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      if (previousDocumentTheme === undefined) delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = previousDocumentTheme;
+    };
   }, []);
 
   const releaseScrollLock = useCallback(() => {
@@ -104,6 +110,7 @@ export default function LandingThemeProvider({
     const nextTheme: LandingTheme = theme === 'light' ? 'dark' : 'light';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const changeTheme = () => {
+      document.documentElement.dataset.theme = nextTheme;
       root.dataset.landingTheme = nextTheme;
       flushSync(() => setTheme(nextTheme));
       try { window.localStorage.setItem(LANDING_THEME_STORAGE_KEY, nextTheme); }
