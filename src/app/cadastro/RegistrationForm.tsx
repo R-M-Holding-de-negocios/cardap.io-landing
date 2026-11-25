@@ -36,6 +36,7 @@ export default function RegistrationForm(){
       ownerName:String(form.get('ownerName')||''),
       email:String(form.get('email')||''),
       phone:String(form.get('phone')||''),
+      cpfCnpj:String(form.get('cpfCnpj')||'').replace(/\D/g,''),
       password:String(form.get('password')||''),
       planId,paymentMethod,...(ref.trim()?{ref:ref.trim().toUpperCase()}:{})
     };
@@ -72,6 +73,7 @@ export default function RegistrationForm(){
             <label className="block text-sm font-bold">Seu nome<input name="ownerName" required maxLength={120} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Nome completo"/></label>
             <label className="block text-sm font-bold">E-mail<input name="email" type="email" autoComplete="email" required maxLength={254} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="voce@restaurante.com"/></label>
             <label className="block text-sm font-bold">WhatsApp<input name="phone" type="tel" autoComplete="tel" required className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="(11) 99999-9999"/></label>
+            <label className="block text-sm font-bold">CPF ou CNPJ para cobrança<input name="cpfCnpj" inputMode="numeric" autoComplete="off" required pattern="[0-9./ -]{11,18}" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Documento do responsável pela assinatura"/><span className="mt-1 block text-xs font-normal text-muted">Usado pelo Asaas para emitir a mensalidade.</span></label>
           </div>
           <label className="block text-sm font-bold">Senha de acesso<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={72} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3"/><span className="mt-1 block text-xs font-normal text-muted">Use ao menos 12 caracteres.</span></label>
           <label className="block text-sm font-bold">Código de afiliado<input value={ref} onChange={event=>setRef(event.target.value.toUpperCase())} maxLength={12} autoComplete="off" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Opcional"/><span className="mt-1 block text-xs font-normal text-muted">Identifica quem indicou seu restaurante; não altera o preço.</span></label>
