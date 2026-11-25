@@ -25,6 +25,8 @@ next-env.d.ts
 *.pem
 
 # Debug
+*.log
+.next-portal-check/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
