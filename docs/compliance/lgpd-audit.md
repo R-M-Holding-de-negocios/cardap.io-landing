@@ -1,0 +1,24 @@
+# Auditoria preliminar de privacidade e legislação brasileira — 14/11/2026
+
+Escopo: landing estática isolada. Resultado **preliminar**, sem conclusão de conformidade do SaaS ou do site publicado.
+
+| Tema / norma | Aplicabilidade e evidência | Estado / ação necessária |
+|---|---|---|
+| [LGPD](https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-normaatualizada-pl.html) — finalidades, bases, necessidade e transparência | `cardapio-theme` e nova preferência de privacidade ficam no navegador; logs de acesso podem conter IP. | Política informa o observado. Confirmar controlador, base legal de logs/preferências, teste de balanceamento se usado legítimo interesse, prestadores, prazos e inventário do SaaS. |
+| [ANPD — cookies](https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf/@@display-file/file) | Não há tag analítica/publicitária no código. Preferências opcionais começam falsas; rejeição e revogação são acessíveis. | Antes de inserir tags, mapear nomes, prazos, terceiros e países; usar `isCategoryAllowed` **antes** de carregar cada script, testar revogação e subir versão do consentimento após mudança relevante. |
+| [Marco Civil da Internet](https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm) | Aplicação pública e provedor podem manter registros de acesso. | Confirmar enquadramento do provedor, política de guarda, proteção, acesso e exclusão; este repositório não contém logs do host. |
+| [CDC](https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm) e [Decreto 7.962/2013](https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm) | Landing apresenta planos e leva ao cadastro/contratação no SaaS; esta pasta não recebe pagamento. | Revisar oferta, preços, identificação do fornecedor, atendimento, resumo contratual, confirmação, cancelamento e arrependimento no fluxo real. As condições comerciais não foram inventadas. |
+| [Lei Brasileira de Inclusão](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm) | Interface pública. | Aviso testado em largura móvel e por teclado; auditoria completa de acessibilidade do site e do SaaS ainda necessária. |
+| [ANPD — incidentes](https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis) | Procedimento operacional é necessário se houver incidente com dados pessoais. | Definir responsáveis, detecção, contenção, preservação de evidências, avaliação de risco e comunicação à ANPD/titulares nos casos exigidos pelo regulamento. |
+
+## Dados, compartilhamento e retenção
+
+No código desta landing, não há coleta direta de nome, e-mail, telefone ou pagamento. A prévia interativa não chama API. A preferência de tema e o consentimento ficam em `localStorage` até alteração, limpeza do navegador ou mudança de versão. O IP pode chegar ao provedor durante a entrega de qualquer página; provedor, finalidade, país, suboperadores e retenção não estão disponíveis no repositório. O sistema principal pode processar dados de contas, restaurantes, funcionários, pedidos e pagamentos, mas nenhuma categoria, base, prazo ou compartilhamento pode ser afirmado sem sua auditoria.
+
+## Leitura complementar do sistema principal
+
+O cadastro do SaaS coleta nome do restaurante e do responsável, e-mail, telefone, senha, plano e forma de pagamento (`frontend/src/app/cadastro/page.tsx`); o Worker persiste cadastro em D1 e inicia cobrança (`worker/src/auth.ts`). O formulário de parceiros coleta nome, e-mail, chave Pix, WhatsApp e senha protegida por hash. Isso exige inventário próprio de finalidades, bases, prestadores de cobrança, retenção, medidas de segurança e direitos. A afirmação anterior sobre “cookie de 90 dias” foi removida do portal: a indicação agora depende do código fornecido no cadastro e não de rastreamento por cookie. O painel expõe apenas nome, situação comercial e comissões dos restaurantes atribuídos ao afiliado autenticado.
+
+## Direitos dos titulares e grupos específicos
+
+A preferência desta landing pode ser alterada ou revogada no rodapé. Pedidos de acesso, correção, exclusão e informação sobre compartilhamento exigem canal real e verificação proporcional da identidade; não foi criado botão de envio sem backend. O proprietário deve prover o canal e o procedimento para responder aos [direitos descritos pela ANPD](https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados-1/direito-dos-titulares). Esta landing comercial não é dirigida a crianças; eventual uso por crianças/adolescentes no cardápio ou tratamento pelo SaaS requer avaliação própria. Transferência internacional depende da localização efetiva dos prestadores e deve ser analisada à luz da [Resolução ANPD nº 19/2024](https://www.gov.br/anpd/pt-br/acesso-a-informacao/institucional/atos-normativos/regulamentacoes_anpd/resolucao-cd-anpd-no-19-de-23-de-agosto-de-2024).

@@ -1,5 +1,7 @@
 # Revisão pré-publicação: privacidade, termos e conteúdo
 
+> Revisão histórica iniciada para a landing antiga. O cadastro, a candidatura de afiliado e os portais agora estão na landing. O estado e as pendências atuais estão em `AUDITORIA-LANDING-2026-11-23.md`, `compliance/legal-pending-items.md` e `pre-publicacao.md`.
+
 ## Escopo verificado
 
 Esta revisão cobre a landing em `C:\CARDAPIO-LANDING` e uma leitura das páginas de cadastro e login do frontend principal. Ela não substitui a validação dos serviços, da hospedagem e dos contratos com fornecedores.

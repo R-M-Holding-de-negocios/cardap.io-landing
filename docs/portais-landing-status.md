@@ -1,28 +1,48 @@
-# Portais na landing — estado em 23/11/2026
+# Portais na landing — atualizado em 24/11/2026
 
-## Implementado localmente
+## Situação mais recente
 
-- Páginas `/parceiros`, `/partner/login`, `/partner/reset` e `/admin/*` trazidas do frontend do SaaS para esta landing.
-- Next.js preparado para rotas de servidor na Vercel, substituindo a exportação estática.
-- Proxy de rotas explícitas para a API Cloudflare, com cookies HttpOnly encaminhados apenas à área correspondente, respostas privadas sem cache e bloqueio de POST de origem divergente.
-- Verificação de sessão administrativa no servidor antes de renderizar `/admin/*`; TOTP e autorização de ações continuam na API Cloudflare.
-- Link `/r/[code]` registra visita quando a API responde e leva ao cadastro na landing com o código preenchido.
-- Cadastro do restaurante também passa pelo servidor da landing em `/api/auth/register`, sem depender de CORS do navegador.
-- Navegação pública aponta para o programa e portal na própria landing. Texto da simulação usa o preço Pro atual de R$ 149.
+- Em 24/11, a revisão visual acessou o Preview `https://cardap-io-landing-ayq25imt3-rj-6821.vercel.app`. Páginas públicas, cadastro, entradas de admin/afiliado e páginas legais foram conferidas em 1280 px e 390 px. Textos e cartões apareceram; não foi reproduzida a falha anterior de conteúdo invisível. Detalhes em `REVISAO-VISUAL-2026-11-24.md`.
+- O menu móvel e a troca de tema exibem uma máscara transitória que cobre parte da tela durante a animação. Depois de concluída, a interface fica legível. Convém suavizar e verificar em aparelho real.
+- As rotas internas do admin redirecionaram para o login sem sessão. Os painéis autenticados de admin e afiliado **não foram reavaliados em 24/11**; a verificação autenticada abaixo é a da rodada anterior.
+- O formulário **publicado** em 24/11 ainda não mostrava CPF/CNPJ. O campo está somente na alteração local de `RegistrationForm.tsx`. Não há confirmação de novo deploy nem de cobrança inicial pela versão atualizada.
+- Em 24/11, 40/40 testes passaram. A checagem de tipos passou após remover tipos gerados antigos em `.next/dev/types`; não houve mudança de código fonte nessa limpeza.
 
-## Evidência
+As informações de deploy e transações abaixo são o registro da homologação de 23/11, não uma nova checagem da configuração remota em 24/11.
 
-- `npm run typecheck`: aprovado novamente em 23/11.
-- `npm test -- --run`: 39/39 aprovados novamente em 23/11.
-- `npm run build`: não concluiu neste ambiente; Windows sandbox retornou `EPERM` ao criar pastas de `.next`, inclusive com diretório de build alternativo. O build remoto da Vercel concluiu e o Preview ficou `READY` em 22/11/2026. O teste visual autenticado segue pendente.
-- `git diff --check`: sem erro de espaço.
+## Arquitetura
 
-## Pendente antes de publicar
+- A landing Next.js em `C:\CARDAPIO-LANDING` contém páginas públicas, cadastro, portal do afiliado e administração. O SaaS do restaurante permanece no frontend Cloudflare.
+- Branch Preview `codex/portais-landing-preview` na Vercel. Último commit publicado da landing: `48d9f4d`; deploy `dpl_2ABATGSwmrtTH99dsSK1d63izkmA` pronto em `https://cardap-io-landing-gt0n8h4av-rj-6821.vercel.app`. Produção de `mycardap.io` não foi alterada.
+- Preview protegido por autenticação Vercel. `PLATFORM_API_URL` aponta para a API de homologação `https://anfc-cardapios-gestao-homologacao.nevepsiquica333.workers.dev`; `NEXT_PUBLIC_SAAS_URL` aponta para o frontend SaaS de homologação. A API usa D1 `anfc-gestao-homologacao` e Asaas **sandbox**.
+- Administração e afiliados têm autenticação própria. A landing encaminha suas chamadas à API Cloudflare com cookies HttpOnly, sem cache e com bloqueio de POST de origem divergente.
 
-1. **Feito em Preview Vercel:** `PLATFORM_API_URL` aponta para a API HTTPS de homologação e `NEXT_PUBLIC_SAAS_URL` aponta para o aplicativo de homologação. Nenhuma variável de produção foi alterada. `NEXT_PUBLIC_API_URL` deixou de ser necessário; `NEXT_PUBLIC_SITE_URL` é opcional para metadados e pode ficar ausente no Preview.
-2. **Concluído em Preview:** branch `codex/portais-landing-preview`, correção visual no commit `f711011`; build remoto aprovado, deploy `dpl_EEbNkoV3AsZsCPUeDqLxC4cmi8wf` pronto em `https://cardap-io-landing-mv8v2e2sd-rj-6821.vercel.app`. O deploy usa a branch separada e não alterou a produção. O Preview está protegido por autenticação Vercel.
-3. **Validado em 23/11:** login TOTP do admin e login do afiliado, com participação do proprietário; visão geral, restaurantes, afiliados, repasses, atendimento e auditoria abriram com dados reais no Preview. Cartões e textos carregados ficaram legíveis no celular; a visão geral administrativa também foi conferida em desktop. O link de indicação levou ao cadastro com o código preenchido e o contador de acessos do afiliado passou de 2 para 3. O tema da landing foi corrigido para manter logo, menu e conteúdo sincronizados; a correção foi verificada nos temas claro e escuro no Preview `https://cardap-io-landing-mv8v2e2sd-rj-6821.vercel.app`. Ainda faltam envio real da candidatura, recuperação de acesso, cadastro completo de restaurantes, logout e o ciclo de comissão/repasses no Asaas sandbox.
-4. Só após validação, decidir destino da API de produção e publicar no domínio principal. Não apontar produção para a API de homologação.
-5. Após a landing estar operando, atualizar as rotas antigas do frontend SaaS para encaminhar usuários à landing; ainda não alteradas.
+## Homologação ponta a ponta
 
-Os painéis estão no **Preview protegido** da Vercel. As páginas `/parceiros`, `/partner/login`, `/admin/login` e `/cadastro` responderam 200; `/admin` sem sessão exibiu o login, e a API administrativa sem sessão respondeu 401. A API Cloudflare, o SaaS dos restaurantes e o domínio de produção permanecem inalterados nesta etapa.
+- Admin com TOTP e afiliado de teste entraram no Preview. Restaurantes, Afiliados, Repasses, Atendimento e Auditoria abriram. Tema claro e escuro, textos e cartões foram conferidos em celular e desktop.
+- Código fictício de afiliado `FA896ACA4588`. O link preencheu o cadastro na landing. Restaurantes fictícios A (`24baf288-76b9-446b-9e7e-d2ff63e7a247`) e B (`552f1033-2ade-4655-aa31-56284e803108`) foram criados no plano Essencial de R$ 79/mês, com Pix sandbox. Ambas as indicações foram aprovadas no admin.
+- A criação de cobranças revelou dois requisitos do Asaas: cabeçalho `User-Agent` e CPF/CNPJ do pagador. O Worker de homologação foi corrigido e publicado na versão `ba1b5b38-16d0-44cd-a8d6-d970da8a04b5`. A cópia de trabalho do SaaS está em `.saas-work/affiliate-approval`. A correção preserva o wrapper de sessão que evita importação circular entre `auth.ts` e `billing.ts`.
+- Documentos sintéticos foram adicionados **somente** aos perfis A/B de homologação. Cobranças Pix A `pay_0_l6chzh8jd1q2tw` e B `pay_0_i6zfwuuo0qkh53` foram geradas e confirmadas pela operação exclusiva do Asaas sandbox, sem dinheiro real. Webhooks mudaram ambas as assinaturas para `active` e criaram duas comissões de R$ 15,60, equivalentes a 20% do líquido recebido.
+- Após A, o portal mostrou 1 de 2 restaurantes válidos, R$ 15,60 registrados e R$ 0,00 disponível. Após B, mostrou 2 de 2, R$ 31,20 registrados e R$ 0,00 disponível durante a reserva de sete dias. O admin mostrou os mesmos valores e ambas as revisões `approved`. Nenhum repasse Pix foi feito.
+- Testes da landing: 40/40 e tipagem aprovados após a inclusão do campo CPF/CNPJ. Tipagem do frontend SaaS passou; testes de cobrança do Worker: 3/3 e tipagem aprovados.
+
+## Ainda não publicado
+
+- `src/app/cadastro/RegistrationForm.tsx` coleta CPF/CNPJ para as próximas assinaturas, mas ainda precisa de commit, push e deploy Preview na Vercel.
+- `.saas-work/affiliate-approval/frontend/src/app/cadastro/page.tsx` também coleta o documento no cadastro legado do SaaS, mas o frontend Cloudflare de homologação ainda não recebeu essa mudança.
+- O Worker de homologação já recebeu a correção. O código correspondente no repositório principal do SaaS, fora deste workspace, precisa ser sincronizado e versionado para não se perder em outro deploy.
+
+## Pendências para lançamento
+
+1. Publicar o formulário atualizado da landing no Preview e testar um cadastro novo com CPF/CNPJ, confirmando a cobrança na primeira tentativa.
+2. Sincronizar e versionar as correções do Worker e do formulário legado no repositório principal do SaaS; publicar o frontend legado em homologação.
+3. Verificar no sandbox o cancelamento até o sétimo dia, a anulação da comissão sem estorno, a maturação após sete dias e a fila de repasses. Não fazer Pix para a conta fictícia.
+4. Remover o Worker temporário `anfc-asaas-diagnostico-homologacao`, criado para identificar o erro `user_agent_not_informed`. A exclusão não foi executada porque a revisão automática da ferramenta atingiu o limite de uso. O endpoint público `/check` devolve apenas status e códigos de erro, sem credenciais ou dados da conta, mas deve ser removido assim que a revisão voltar a estar disponível.
+5. Preparar API, banco, chaves e webhook **de produção** separados do sandbox; validar domínio e fluxos antes de apontar `mycardap.io` para a nova landing.
+
+## Regras do programa
+
+- Comissão de 20% do líquido recebido enquanto o restaurante indicado permanecer cliente.
+- Mínimo de dois restaurantes distintos, pagos e aprovados para habilitar repasse.
+- Cada comissão aguarda sete dias após o pagamento; cancelamento da assinatura nesse período elimina a comissão, mesmo sem estorno.
+- Administrador aprova e registra repasses manuais. O Pix é feito fora do sistema e só deve ser marcado como pago após confirmação efetiva.
