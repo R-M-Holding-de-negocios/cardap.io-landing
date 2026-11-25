@@ -43,3 +43,7 @@ yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Imagens de rascunho na raiz
+/LOGO
+/image*.png
