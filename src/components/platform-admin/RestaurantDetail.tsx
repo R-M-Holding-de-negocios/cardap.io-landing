@@ -19,7 +19,9 @@ export default function RestaurantDetail({ id }: { id: string }) {
   const [restaurant, setRestaurant] = useState<RestaurantRow | null>(null), [error, setError] = useState('');
   const [contracts, setContracts] = useState<BillingContract[]>([]), [contractCursor, setContractCursor] = useState<string | null>(null);
   const [events, setEvents] = useState<BillingEvent[]>([]), [eventCursor, setEventCursor] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  // `ready` fica verdadeiro depois da primeira carga: recarregar não desmonta as ações, para o
+  // resultado da última ação continuar na tela.
+  const [loading, setLoading] = useState(true), [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true); setError('');
@@ -32,6 +34,7 @@ export default function RestaurantDetail({ id }: { id: string }) {
       setRestaurant(detail.restaurant);
       setContracts(billing.items); setContractCursor(billing.nextCursor);
       setEvents(received.items); setEventCursor(received.nextCursor);
+      setReady(true);
     } catch (e) { setError(e instanceof Error ? e.message : 'Não foi possível carregar os dados.'); }
     finally { setLoading(false); }
   }, [base]);
@@ -65,7 +68,7 @@ export default function RestaurantDetail({ id }: { id: string }) {
       <div><dt className="font-bold text-muted">Indicação</dt><dd>{restaurant.affiliate || '—'}</dd></div>
     </dl>}
     {marks.map(code => <p key={code} role="note" className="rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-900"><strong>{ATTENTION_LABELS[code].label}.</strong> {ATTENTION_LABELS[code].help}</p>)}
-    {!loading && !error && <>
+    {ready && <>
       <BillingActions id={id} onChanged={() => void load()} />
       <RestaurantBilling contracts={contracts} events={events} />
       <div className="flex flex-wrap gap-3">

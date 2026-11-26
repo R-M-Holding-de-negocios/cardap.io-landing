@@ -56,4 +56,11 @@ describe('ações de cobrança', () => {
     expect(source).toContain('role="alert"');
     expect(readFileSync('src/components/platform-admin/RestaurantDetail.tsx', 'utf8')).toContain('BillingActions');
   });
+
+  it('recarregar os dados depois de uma ação não desmonta as ações (o resultado continua na tela)', () => {
+    const detail = readFileSync('src/components/platform-admin/RestaurantDetail.tsx', 'utf8');
+    const gate = detail.slice(0, detail.indexOf('<BillingActions')).trimEnd().split('\n').pop() || '';
+    expect(gate).toContain('{ready && <>');
+    expect(gate).not.toContain('loading');
+  });
 });
