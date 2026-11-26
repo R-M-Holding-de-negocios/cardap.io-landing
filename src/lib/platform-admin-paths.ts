@@ -3,7 +3,8 @@ export function platformAdminPathAllowed(method:string,path:string[]){
  const key=path.join('/');
  if(method==='GET')return ['session','overview','attention','restaurants','affiliates','payouts','support','audit'].includes(key)
   || path.length===2&&['restaurants','affiliates','support','payouts'].includes(path[0])
-  || path.length===3&&path[0]==='affiliates'&&['pix-key','commissions','payouts'].includes(path[2]);
+  || path.length===3&&path[0]==='affiliates'&&['pix-key','commissions','payouts'].includes(path[2])
+  || path.length===3&&path[0]==='restaurants'&&['billing','billing-events'].includes(path[2]);
  if(method==='POST')return ['login','logout','setup','setup/confirm'].includes(key)
   || path.length===3&&path[0]==='restaurants'&&['suspend','resume'].includes(path[2])
   || path.length===3&&path[0]==='affiliates'&&['approve','reject','suspend','resume','payouts','reset'].includes(path[2])
