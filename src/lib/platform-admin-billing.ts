@@ -6,6 +6,8 @@ export const CONTRACT_STATUS_LABELS: Record<string, string> = {
   canceled: 'Cancelado', refunded: 'Estornado', setup_failed: 'Cobrança não criada',
 };
 export const PAYMENT_METHOD_LABELS: Record<string, string> = { PIX: 'Pix', BOLETO: 'Boleto', CREDIT_CARD: 'Cartão de crédito' };
+// Liberação manual pelo painel aparece na lista de eventos com este prefixo.
+export const eventTypeLabel = (type: string) => type.startsWith('MANUAL_RELEASE:') ? `Liberação manual pelo painel (${type.slice('MANUAL_RELEASE:'.length)})` : type;
 export const EVENT_STATUS_LABELS: Record<string, string> = { processed: 'Processado', ignored: 'Ignorado', processing: 'Em processamento' };
 export const IGNORE_REASON_LABELS: Record<string, string> = {
   malformed_event: 'Evento sem os dados esperados',
@@ -57,3 +59,21 @@ export function dateTime(value: string | number | null | undefined): string {
   const time = typeof value === 'number' ? value : value ? Date.parse(value) : Number.NaN;
   return Number.isNaN(time) ? '—' : new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' }).format(time);
 }
+
+// Ações de cobrança do painel (F3-T16). A liberação não tem como ser forçada: o servidor só
+// libera depois de consultar o Asaas.
+export const BILLING_ACTIONS = {
+  'billing-check': { title: 'Conferir com o Asaas', help: 'Consulta a cobrança e a assinatura no Asaas agora e mostra a diferença para o sistema. Não altera nada.' },
+  'billing-retry': { title: 'Tentar criar a cobrança de novo', help: 'Para cobrança que não pôde ser criada. Usa a mesma retomada do sistema e nunca cria uma segunda cobrança.' },
+  'billing-release': { title: 'Liberar conta com pagamento confirmado', help: 'O sistema consulta o Asaas na hora e só libera se o pagamento desta cobrança estiver recebido ou confirmado, com valor, forma e cliente conferidos. Sem confirmação do Asaas, a ação é recusada.' },
+} as const;
+export type BillingActionName = keyof typeof BILLING_ACTIONS;
+
+const DIFFERENCE_LABELS: Record<string, string> = {
+  paid_not_applied: 'A cobrança está paga no Asaas, mas a conta ainda não foi liberada no sistema.',
+  subscription_missing: 'A conta está ativa, mas não existe assinatura no Asaas: a renovação mensal não será cobrada.',
+  subscription_not_linked: 'Existe uma assinatura no Asaas para este contrato, mas ela ainda não está vinculada no sistema.',
+  payment_deleted: 'A cobrança deste contrato foi apagada no Asaas.',
+  subscription_ambiguous: 'Há mais de uma assinatura no Asaas para este contrato. Conferir no painel do Asaas.',
+};
+export const billingDifferenceLabel = (code: string) => DIFFERENCE_LABELS[code] || `Diferença não classificada (${code}).`;

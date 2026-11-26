@@ -6,7 +6,7 @@ export function platformAdminPathAllowed(method:string,path:string[]){
   || path.length===3&&path[0]==='affiliates'&&['pix-key','commissions','payouts'].includes(path[2])
   || path.length===3&&path[0]==='restaurants'&&['billing','billing-events'].includes(path[2]);
  if(method==='POST')return ['login','logout','setup','setup/confirm'].includes(key)
-  || path.length===3&&path[0]==='restaurants'&&['suspend','resume'].includes(path[2])
+  || path.length===3&&path[0]==='restaurants'&&['suspend','resume','billing-retry','billing-check','billing-release'].includes(path[2])
   || path.length===3&&path[0]==='affiliates'&&['approve','reject','suspend','resume','payouts','reset'].includes(path[2])
   || path.length===3&&path[0]==='payouts'&&['paid','cancel'].includes(path[2])
   || path.length===3&&path[0]==='support'&&['assign','note','close','reopen'].includes(path[2])

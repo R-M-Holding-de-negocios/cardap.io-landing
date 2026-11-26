@@ -1,4 +1,4 @@
-import { CONTRACT_STATUS_LABELS, EVENT_STATUS_LABELS, IGNORE_REASON_LABELS, PAYMENT_METHOD_LABELS, billingErrorLabel, dateTime, label, money, safeInvoiceUrl } from '@/lib/platform-admin-billing';
+import { CONTRACT_STATUS_LABELS, EVENT_STATUS_LABELS, IGNORE_REASON_LABELS, PAYMENT_METHOD_LABELS, billingErrorLabel, dateTime, eventTypeLabel, label, money, safeInvoiceUrl } from '@/lib/platform-admin-billing';
 
 export type BillingContract = {
   id: string; planId: string; amountCents: number; paymentMethod: string; status: string; createdAt: string; updatedAt: string;
@@ -46,7 +46,7 @@ export default function RestaurantBilling({ contracts, events }: { contracts: Bi
           <thead className="bg-peach"><tr><th className="p-4">Recebido em</th><th className="p-4">Evento</th><th className="p-4">Tratamento</th><th className="p-4">Motivo</th></tr></thead>
           <tbody>{events.map((event, index) => <tr key={`${event.receivedAt}-${index}`} className="border-t border-outline">
             <td className="p-4">{dateTime(event.receivedAt)}</td>
-            <td className={`p-4 ${code}`}>{event.eventType}</td>
+            <td className={`p-4 ${code}`}>{eventTypeLabel(event.eventType)}</td>
             <td className="p-4">{label(EVENT_STATUS_LABELS, event.processingStatus)}</td>
             <td className="p-4">{event.processingStatus === 'ignored' ? (event.ignoreReason ? label(IGNORE_REASON_LABELS, event.ignoreReason) : 'Motivo não registrado') : '—'}</td>
           </tr>)}</tbody>
