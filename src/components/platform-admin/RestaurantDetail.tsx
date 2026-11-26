@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import BillingActions from '@/components/platform-admin/BillingActions';
 import RestaurantBilling, { type BillingContract, type BillingEvent } from '@/components/platform-admin/RestaurantBilling';
-import type { RestaurantRow } from '@/components/platform-admin/RestaurantTable';
+import { OwnerContact, type RestaurantRow } from '@/components/platform-admin/RestaurantTable';
 import { ATTENTION_CODES, ATTENTION_LABELS } from '@/lib/platform-admin-attention';
 
 type Page<T> = { items: T[]; nextCursor: string | null };
@@ -66,6 +66,7 @@ export default function RestaurantDetail({ id }: { id: string }) {
       <div><dt className="font-bold text-muted">Plano</dt><dd>{restaurant.subscriptionPlan || '—'}</dd></div>
       <div><dt className="font-bold text-muted">Acesso</dt><dd>{restaurant.accessStatus === 'suspended' ? 'Suspenso' : 'Ativo'}</dd></div>
       <div><dt className="font-bold text-muted">Indicação</dt><dd>{restaurant.affiliate || '—'}</dd></div>
+      <div className="sm:col-span-2"><dt className="font-bold text-muted">Responsável</dt><dd><OwnerContact item={{ ownerName: restaurant.ownerName, ownerEmail: restaurant.ownerEmail, ownerPhone: restaurant.ownerPhone }} /></dd></div>
     </dl>}
     {marks.map(code => <p key={code} role="note" className="rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-900"><strong>{ATTENTION_LABELS[code].label}.</strong> {ATTENTION_LABELS[code].help}</p>)}
     {ready && <>
