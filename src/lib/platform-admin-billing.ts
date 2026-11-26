@@ -7,7 +7,7 @@ export const CONTRACT_STATUS_LABELS: Record<string, string> = {
 };
 export const PAYMENT_METHOD_LABELS: Record<string, string> = { PIX: 'Pix', BOLETO: 'Boleto', CREDIT_CARD: 'Cartão de crédito' };
 // Liberação manual pelo painel aparece na lista de eventos com este prefixo.
-export const eventTypeLabel = (type: string) => type.startsWith('MANUAL_RELEASE:') ? `Liberação manual pelo painel (${type.slice('MANUAL_RELEASE:'.length)})` : type;
+export const eventTypeLabel = (type: string) => type === 'MANUAL_CHARGE_DELETED' ? 'Cobrança apagada no Asaas, confirmada pelo painel' : type.startsWith('MANUAL_RELEASE:') ? `Liberação manual pelo painel (${type.slice('MANUAL_RELEASE:'.length)})` : type;
 export const EVENT_STATUS_LABELS: Record<string, string> = { processed: 'Processado', ignored: 'Ignorado', processing: 'Em processamento' };
 export const IGNORE_REASON_LABELS: Record<string, string> = {
   malformed_event: 'Evento sem os dados esperados',
@@ -21,6 +21,7 @@ export const IGNORE_REASON_LABELS: Record<string, string> = {
   state_mismatch: 'O estado no Asaas não confirma o evento',
   contract_canceled: 'Contrato já cancelado',
   invalid_net_value: 'Valor líquido inválido',
+  subscription_charge_deleted: 'Cobrança de assinatura apagada no Asaas (só registrado)',
 };
 
 export const label = (map: Record<string, string>, code: string | null | undefined) => (code && map[code]) || code || '—';
@@ -28,6 +29,7 @@ export const label = (map: Record<string, string>, code: string | null | undefin
 /** Explica o motivo gravado quando a cobrança não pôde ser criada. */
 export function billingErrorLabel(code: string | null | undefined): string {
   if (!code) return '';
+  if (code === 'charge_deleted') return 'A cobrança foi apagada no Asaas. Gere uma nova.';
   if (code === 'asaas_network') return 'Falha de conexão com o Asaas.';
   if (code === 'asaas_not_configured') return 'A chave do Asaas não está configurada neste ambiente.';
   if (code === 'asaas_unexpected_response') return 'O Asaas respondeu sem os dados esperados.';
@@ -64,7 +66,7 @@ export function dateTime(value: string | number | null | undefined): string {
 // libera depois de consultar o Asaas.
 export const BILLING_ACTIONS = {
   'billing-check': { title: 'Conferir com o Asaas', help: 'Consulta a cobrança e a assinatura no Asaas agora e mostra a diferença para o sistema. Não altera nada.' },
-  'billing-retry': { title: 'Tentar criar a cobrança de novo', help: 'Para cobrança que não pôde ser criada. Usa a mesma retomada do sistema e nunca cria uma segunda cobrança.' },
+  'billing-retry': { title: 'Tentar criar a cobrança de novo', help: 'Para cobrança que não pôde ser criada ou que foi apagada no Asaas (o sistema confirma no Asaas na hora). Usa a mesma retomada do sistema e nunca cria uma segunda cobrança.' },
   'billing-release': { title: 'Liberar conta com pagamento confirmado', help: 'O sistema consulta o Asaas na hora e só libera se o pagamento desta cobrança estiver recebido ou confirmado, com valor, forma e cliente conferidos. Sem confirmação do Asaas, a ação é recusada.' },
 } as const;
 export type BillingActionName = keyof typeof BILLING_ACTIONS;
