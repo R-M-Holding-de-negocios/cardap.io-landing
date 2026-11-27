@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { productUrl } from '@/lib/product-url';
 import { registrationApiUrl, registrationErrorMessage } from '@/lib/registration-api';
+import { signupCompletion, type SignupCompletion, type SignupResult } from '@/lib/signup-result';
 
 const plans=[
   {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.'},
@@ -26,7 +27,7 @@ export default function RegistrationForm(){
   const [ref,setRef]=useState(initialRef);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState('');
-  const [complete,setComplete]=useState(false);
+  const [complete,setComplete]=useState<SignupCompletion|null>(null);
 
   async function submit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setLoading(true);setError('');
@@ -42,9 +43,9 @@ export default function RegistrationForm(){
     };
     try{
       const response=await fetch(apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'});
-      const result=await response.json() as {success?:boolean;error?:unknown};
+      const result=await response.json() as SignupResult;
       if(!response.ok||result.success!==true)throw new Error(registrationErrorMessage(result.error));
-      setComplete(true);
+      setComplete(signupCompletion(result));
     }catch(cause){setError(cause instanceof Error?cause.message:'Falha de conexão. Tente novamente.');}
     finally{setLoading(false);}
   }
@@ -55,9 +56,9 @@ export default function RegistrationForm(){
       <p className="text-sm font-bold uppercase tracking-wider text-action">cardap.io</p>
       {complete?<div className="space-y-5" role="status">
         <CheckCircle2 className="h-10 w-10 text-action" aria-hidden="true"/>
-        <h1 className="text-3xl font-black">Conta criada</h1>
-        <p className="leading-relaxed text-muted">Entre com o e-mail e a senha que você acabou de cadastrar para acompanhar o pagamento. Seu cardápio será liberado após a confirmação da cobrança.</p>
-        <a href={productUrl('/login')} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white">Entrar para acompanhar o pagamento <ArrowRight className="h-4 w-4"/></a>
+        <h1 className="text-3xl font-black">{complete.title}</h1>
+        <p className="leading-relaxed text-muted">{complete.text}</p>
+        <a href={productUrl('/login')} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white">{complete.action} <ArrowRight className="h-4 w-4"/></a>
       </div>:<>
         <h1 className="mt-2 text-3xl font-black sm:text-4xl">Crie sua conta</h1>
         <p className="mt-3 leading-relaxed text-muted">Escolha seu plano e a forma de pagamento. Você entrará no sistema para acompanhar a cobrança após criar a conta.</p>
@@ -76,7 +77,7 @@ export default function RegistrationForm(){
             <label className="block text-sm font-bold">CPF ou CNPJ para cobrança<input name="cpfCnpj" inputMode="numeric" autoComplete="off" required pattern="[0-9./ -]{11,18}" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Documento do responsável pela assinatura"/><span className="mt-1 block text-xs font-normal text-muted">Usado pelo Asaas para emitir a mensalidade.</span></label>
           </div>
           <label className="block text-sm font-bold">Senha de acesso<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={72} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3"/><span className="mt-1 block text-xs font-normal text-muted">Use ao menos 12 caracteres.</span></label>
-          <label className="block text-sm font-bold">Código de afiliado<input value={ref} onChange={event=>setRef(event.target.value.toUpperCase())} maxLength={12} autoComplete="off" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Opcional"/><span className="mt-1 block text-xs font-normal text-muted">Identifica quem indicou seu restaurante; não altera o preço.</span></label>
+          <label className="block text-sm font-bold">Cupom ou código de afiliado<input value={ref} onChange={event=>setRef(event.target.value.toUpperCase())} maxLength={12} autoComplete="off" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Opcional"/><span className="mt-1 block text-xs font-normal text-muted">Identifica quem indicou seu restaurante. Se o afiliado tiver promoção, ela é aplicada ao criar a conta.</span></label>
           <button type="submit" disabled={loading} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white disabled:opacity-60">{loading?'Criando conta...':'Criar conta e continuar'}<ArrowRight className="h-4 w-4"/></button>
         </form>
       </>}
