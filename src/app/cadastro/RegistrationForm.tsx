@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { productUrl } from '@/lib/product-url';
 import { registrationApiUrl, registrationErrorMessage } from '@/lib/registration-api';
-import { signupCompletion, type SignupCompletion, type SignupResult } from '@/lib/signup-result';
+import { signupCompletion, signupEntryUrl, type SignupCompletion, type SignupResult } from '@/lib/signup-result';
 import { randomSignupData } from '@/lib/test-signup-data';
 
 const plans=[
@@ -56,7 +56,10 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
       const response=await fetch(apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'});
       const result=await response.json() as SignupResult;
       if(!response.ok||result.success!==true)throw new Error(registrationErrorMessage(result.error));
-      setComplete(signupCompletion(result));
+      // Vai direto ao sistema já logado; no modo de teste mostra antes o e-mail e a senha gerados.
+      const entry=signupEntryUrl(result);
+      if(entry&&!testFill){window.location.assign(entry);return;}
+      setComplete({...signupCompletion(result),entry});
     }catch(cause){setError(cause instanceof Error?cause.message:'Falha de conexão. Tente novamente.');}
     finally{setLoading(false);}
   }
@@ -70,7 +73,7 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
         <h1 className="text-3xl font-black">{complete.title}</h1>
         <p className="leading-relaxed text-muted">{complete.text}</p>
         {testFill&&generated&&<p className="rounded-xl border border-dashed border-action p-3 text-sm">Conta de teste. E-mail: <strong>{generated.email}</strong> · Senha gerada: <strong>{generated.password}</strong></p>}
-        <a href={productUrl('/login')} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white">{complete.action} <ArrowRight className="h-4 w-4"/></a>
+        <a href={complete.entry||productUrl('/login')} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white">{complete.action} <ArrowRight className="h-4 w-4"/></a>
       </div>:<>
         <h1 className="mt-2 text-3xl font-black sm:text-4xl">Crie sua conta</h1>
         <p className="mt-3 leading-relaxed text-muted">Escolha seu plano e a forma de pagamento. Você entrará no sistema para acompanhar a cobrança após criar a conta.</p>
