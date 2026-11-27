@@ -180,7 +180,7 @@ export default function HomePage() {
                 description: 'Para organizar o cardápio digital e receber pedidos das mesas.',
                 features: [
                   'Cardápio acessado por QR Code ou NFC',
-                  'Modelos Cinema, Imersivo e Editorial',
+                  'Modelos Cinema, Imersivo, Editorial e Vitrine',
                   'Cadastro de categorias e produtos',
                   'Fotos, vídeos e controle de disponibilidade dos produtos',
                   'Pedidos enviados ao painel do restaurante',
@@ -194,7 +194,7 @@ export default function HomePage() {
                 description: 'Para oferecer mais opções de cardápio e acompanhar o atendimento da equipe.',
                 features: [
                   'Tudo do Básico',
-                  'Modelos Vitrine, Crush, Passarela, Conversas & Status e Reels',
+                  'Modelos Crush, Passarela, Conversas & Status e Reels',
                   'Chamadas de garçom e solicitações de conta',
                   'Fila de atendimento no celular da equipe e na TV',
                   'Relatórios por período ou turno',
