@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { productUrl } from '@/lib/product-url';
 import { registrationApiUrl, registrationErrorMessage } from '@/lib/registration-api';
 import { signupCompletion, type SignupCompletion, type SignupResult } from '@/lib/signup-result';
+import { randomSignupData } from '@/lib/test-signup-data';
 
 const plans=[
   {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.'},
@@ -15,7 +16,7 @@ const plans=[
 export type SignupPlan=(typeof plans)[number]['id'];
 type PaymentMethod='PIX'|'CREDIT_CARD';
 
-export default function RegistrationForm(){
+export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
   const search=useSearchParams();
   const requestedPlan=search.get('plan');
   const initialPlan:SignupPlan=requestedPlan==='basic'||requestedPlan==='pro'?requestedPlan:'essential';
@@ -28,6 +29,16 @@ export default function RegistrationForm(){
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState('');
   const [complete,setComplete]=useState<SignupCompletion|null>(null);
+  const formRef=useRef<HTMLFormElement>(null);
+  const [generated,setGenerated]=useState<{email:string;password:string}|null>(null);
+
+  // Só na homologação e no desenvolvimento: preenche o formulário com dados fictícios.
+  function fillTestData(){
+    const form=formRef.current;if(!form)return;
+    const data=randomSignupData();
+    for(const [name,value] of Object.entries(data)){const field=form.elements.namedItem(name);if(field instanceof HTMLInputElement)field.value=value;}
+    setGenerated({email:data.email,password:data.password});
+  }
 
   async function submit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setLoading(true);setError('');
@@ -58,12 +69,18 @@ export default function RegistrationForm(){
         <CheckCircle2 className="h-10 w-10 text-action" aria-hidden="true"/>
         <h1 className="text-3xl font-black">{complete.title}</h1>
         <p className="leading-relaxed text-muted">{complete.text}</p>
+        {testFill&&generated&&<p className="rounded-xl border border-dashed border-action p-3 text-sm">Conta de teste. E-mail: <strong>{generated.email}</strong> · Senha gerada: <strong>{generated.password}</strong></p>}
         <a href={productUrl('/login')} className="inline-flex min-h-12 items-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white">{complete.action} <ArrowRight className="h-4 w-4"/></a>
       </div>:<>
         <h1 className="mt-2 text-3xl font-black sm:text-4xl">Crie sua conta</h1>
         <p className="mt-3 leading-relaxed text-muted">Escolha seu plano e a forma de pagamento. Você entrará no sistema para acompanhar a cobrança após criar a conta.</p>
         {error&&<p role="alert" className="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-        <form onSubmit={submit} className="mt-8 space-y-6">
+        {testFill&&<div className="mt-5 rounded-xl border border-dashed border-action p-3 text-sm">
+          <button type="button" onClick={fillTestData} className="min-h-11 rounded-full border border-action px-4 font-bold text-action">Preencher dados de teste</button>
+          <span className="ml-2 text-muted">Só na homologação. Dados fictícios.</span>
+          {generated&&<p className="mt-2">E-mail: <strong>{generated.email}</strong> · Senha gerada: <strong>{generated.password}</strong></p>}
+        </div>}
+        <form ref={formRef} onSubmit={submit} className="mt-8 space-y-6">
           <fieldset><legend className="mb-3 font-bold">Escolha seu plano</legend><div className="grid gap-3 sm:grid-cols-3">{plans.map(plan=><label key={plan.id} className={`cursor-pointer rounded-2xl border p-4 ${planId===plan.id?'border-action bg-peach ring-2 ring-action':'border-outline'}`}>
             <input type="radio" name="plan" value={plan.id} checked={planId===plan.id} onChange={()=>setPlanId(plan.id)} className="sr-only"/>
             <span className="block font-bold">{plan.name}</span><span className="mt-1 block text-xl font-black">{plan.price}<small className="text-xs font-medium">/mês</small></span><span className="mt-2 block text-xs text-muted">{plan.description}</span>
