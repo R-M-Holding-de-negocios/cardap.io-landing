@@ -5,6 +5,7 @@ import RestaurantUsage from '@/components/platform-admin/RestaurantUsage';
 import RestaurantBilling, { type BillingContract, type BillingEvent } from '@/components/platform-admin/RestaurantBilling';
 import { OwnerContact, type RestaurantRow } from '@/components/platform-admin/RestaurantTable';
 import { ATTENTION_CODES, ATTENTION_LABELS } from '@/lib/platform-admin-attention';
+import RestaurantPromotion from './RestaurantPromotion';
 
 type Page<T> = { items: T[]; nextCursor: string | null };
 const button = 'min-h-11 rounded-full border border-outline px-4 font-bold disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action';
@@ -70,6 +71,7 @@ export default function RestaurantDetail({ id }: { id: string }) {
       <div className="sm:col-span-2"><dt className="font-bold text-muted">Responsável</dt><dd><OwnerContact item={{ ownerName: restaurant.ownerName, ownerEmail: restaurant.ownerEmail, ownerPhone: restaurant.ownerPhone }} /></dd></div>
     </dl>}
     {marks.map(code => <p key={code} role="note" className="rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-900"><strong>{ATTENTION_LABELS[code].label}.</strong> {ATTENTION_LABELS[code].help}</p>)}
+    {restaurant && <RestaurantPromotion promotion={restaurant.promotion ?? null} />}
     {restaurant && <RestaurantUsage usage={restaurant.usage} />}
     {ready && <>
       <BillingActions id={id} onChanged={() => void load()} />
