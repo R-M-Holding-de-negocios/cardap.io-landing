@@ -10,9 +10,10 @@ import { randomSignupData } from '@/lib/test-signup-data';
 import { promotionSummary, type SignupPromotion } from '@/lib/signup-promotion';
 
 const plans=[
-  {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.'},
-  {id:'essential',name:'Essencial',price:'R$ 79',description:'Cardápio, atendimento e relatórios.'},
-  {id:'pro',name:'Pro',price:'R$ 149',description:'Atendimento e gestão do restaurante.'},
+  {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.',comingSoon:false},
+  {id:'essential',name:'Essencial',price:'R$ 79',description:'Cardápio, atendimento e relatórios.',comingSoon:false},
+  // Pro "em breve" (F3-T3): aparece, mas não se escolhe; a API também recusa.
+  {id:'pro',name:'Pro',price:'R$ 149',description:'Atendimento e gestão do restaurante.',comingSoon:true},
 ] as const;
 export type SignupPlan=(typeof plans)[number]['id'];
 type PaymentMethod='PIX'|'CREDIT_CARD';
@@ -20,7 +21,7 @@ type PaymentMethod='PIX'|'CREDIT_CARD';
 export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
   const search=useSearchParams();
   const requestedPlan=search.get('plan');
-  const initialPlan:SignupPlan=requestedPlan==='basic'||requestedPlan==='pro'?requestedPlan:'essential';
+  const initialPlan:SignupPlan=requestedPlan==='basic'?'basic':'essential';
   const requestedRef=search.get('ref')?.trim().toUpperCase()||'';
   const initialRef=/^[A-Z0-9]{12}$/.test(requestedRef)?requestedRef:'';
   const apiUrl=registrationApiUrl();
@@ -98,9 +99,9 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
           {generated&&<p className="mt-2">E-mail: <strong>{generated.email}</strong> · Senha gerada: <strong>{generated.password}</strong></p>}
         </div>}
         <form ref={formRef} onSubmit={submit} className="mt-8 space-y-6">
-          <fieldset><legend className="mb-3 font-bold">Escolha seu plano</legend><div className="grid gap-3 sm:grid-cols-3">{plans.map(plan=><label key={plan.id} className={`cursor-pointer rounded-2xl border p-4 ${planId===plan.id?'border-action bg-peach ring-2 ring-action':'border-outline'}`}>
-            <input type="radio" name="plan" value={plan.id} checked={planId===plan.id} onChange={()=>setPlanId(plan.id)} className="sr-only"/>
-            <span className="block font-bold">{plan.name}</span><span className="mt-1 block text-xl font-black">{plan.price}<small className="text-xs font-medium">/mês</small></span><span className="mt-2 block text-xs text-muted">{plan.description}</span>
+          <fieldset><legend className="mb-3 font-bold">Escolha seu plano</legend><div className="grid gap-3 sm:grid-cols-3">{plans.map(plan=><label key={plan.id} className={`rounded-2xl border p-4 ${plan.comingSoon?'cursor-not-allowed border-dashed border-outline opacity-60':planId===plan.id?'cursor-pointer border-action bg-peach ring-2 ring-action':'cursor-pointer border-outline'}`}>
+            <input type="radio" name="plan" value={plan.id} checked={planId===plan.id} disabled={plan.comingSoon} onChange={()=>setPlanId(plan.id)} className="sr-only"/>
+            <span className="block font-bold">{plan.name}{plan.comingSoon&&<span className="ml-2 rounded-full bg-cream px-2 py-0.5 text-xs font-bold text-muted">Em breve</span>}</span><span className="mt-1 block text-xl font-black">{plan.price}<small className="text-xs font-medium">/mês</small></span><span className="mt-2 block text-xs text-muted">{plan.description}</span>
           </label>)}</div></fieldset>
           <label className="block text-sm font-bold">Forma de pagamento<select value={paymentMethod} onChange={event=>setPaymentMethod(event.target.value as PaymentMethod)} className="mt-1 min-h-12 w-full rounded-xl border border-outline bg-white p-3"><option value="PIX">Pix</option><option value="CREDIT_CARD">Cartão de crédito</option></select></label>
           <div className="grid gap-4 sm:grid-cols-2">

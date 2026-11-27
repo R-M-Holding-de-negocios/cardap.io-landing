@@ -12,6 +12,7 @@ import ScrollReveal from '@/components/public/react-bits/ScrollReveal';
 import RotatingText from '@/components/public/react-bits/RotatingText';
 import PixelCard from '@/components/public/react-bits/PixelCard';
 import LandingThemeProvider from '@/components/public/LandingThemeProvider';
+import ProWaitlist from '@/components/public/ProWaitlist';
 import { LANDING_ICONS } from '@/lib/landing-assets';
 import { planSignupUrl, productUrl, signupUrl, type PlanId } from '@/lib/product-url';
 import { Sparkles, ArrowRight, CheckCircle2, QrCode, Smartphone, Tv, HelpCircle, Utensils, ClipboardList, Users, PackageCheck, ShoppingBag } from 'lucide-react';
@@ -213,7 +214,8 @@ export default function HomePage() {
                   'Cadastro e acompanhamento de fornecedores',
                   'Pedidos de compra, recebimentos e devoluções',
                 ],
-                action: 'Continuar com o Pro',
+                action: '',
+                comingSoon: true,
               },
             ].map((plan) => {
               const cardContent = <>
@@ -226,9 +228,9 @@ export default function HomePage() {
                   </ul>
                 </div>
                 <div className="pt-8 mt-auto">
-                  <Link href={planSignupUrl(plan.id as PlanId)} className={`w-full block text-center py-3.5 rounded-xl font-bold text-sm transition-colors ${plan.featured ? 'bg-action text-ink' : 'bg-cream border border-outline text-muted hover:bg-peach'}`}>
+                  {plan.comingSoon ? <ProWaitlist /> : <Link href={planSignupUrl(plan.id as PlanId)} className={`w-full block text-center py-3.5 rounded-xl font-bold text-sm transition-colors ${plan.featured ? 'bg-action text-ink' : 'bg-cream border border-outline text-muted hover:bg-peach'}`}>
                     {plan.action}
-                  </Link>
+                  </Link>}
                 </div>
               </>;
 
