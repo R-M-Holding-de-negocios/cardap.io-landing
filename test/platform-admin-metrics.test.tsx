@@ -31,7 +31,8 @@ describe('indicadores de receita no painel', () => {
     expect(html).toContain('antes das taxas do Asaas');
     expect(html).toContain('primeiro pagamento confirmado');
     expect(html).toContain('contrato mais recente está cancelado');
-    expect(html.split('<p class="mt-2 text-xs text-muted">').length - 1).toBe(7);
+    // 8 desde a contagem de contas em teste grátis (F3-T23, passo 5).
+    expect(html.split('<p class="mt-2 text-xs text-muted">').length - 1).toBe(8);
   });
 
   it('a visão geral consulta a rota e mostra o bloco', () => {
