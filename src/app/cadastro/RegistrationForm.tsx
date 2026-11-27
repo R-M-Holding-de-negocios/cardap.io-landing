@@ -1,12 +1,13 @@
 'use client';
 
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { productUrl } from '@/lib/product-url';
 import { registrationApiUrl, registrationErrorMessage } from '@/lib/registration-api';
 import { signupCompletion, signupEntryUrl, type SignupCompletion, type SignupResult } from '@/lib/signup-result';
 import { randomSignupData } from '@/lib/test-signup-data';
+import { promotionSummary, type SignupPromotion } from '@/lib/signup-promotion';
 
 const plans=[
   {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.'},
@@ -30,6 +31,19 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
   const [error,setError]=useState('');
   const [complete,setComplete]=useState<SignupCompletion|null>(null);
   const formRef=useRef<HTMLFormElement>(null);
+  const [promotion,setPromotion]=useState<SignupPromotion|null>(null);
+  // Promoção do código (link ou digitado), consultada quando o código está completo.
+  useEffect(()=>{
+    const code=ref.trim().toUpperCase();setPromotion(null);
+    if(!/^[A-Z0-9]{12}$/.test(code))return;
+    const controller=new AbortController();
+    fetch(`/api/auth/register/promotion?code=${encodeURIComponent(code)}`,{signal:controller.signal,cache:'no-store'})
+      .then(response=>response.ok?response.json():null)
+      .then((data:{promotion?:SignupPromotion|null}|null)=>{if(!controller.signal.aborted)setPromotion(data?.promotion??null);})
+      .catch(()=>{});
+    return ()=>controller.abort();
+  },[ref]);
+  const summary=promotionSummary(promotion,planId,paymentMethod);
   const [generated,setGenerated]=useState<{email:string;password:string}|null>(null);
 
   // Só na homologação e no desenvolvimento: preenche o formulário com dados fictícios.
@@ -98,6 +112,7 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
           </div>
           <label className="block text-sm font-bold">Senha de acesso<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={72} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3"/><span className="mt-1 block text-xs font-normal text-muted">Use ao menos 12 caracteres.</span></label>
           <label className="block text-sm font-bold">Cupom ou código de afiliado<input value={ref} onChange={event=>setRef(event.target.value.toUpperCase())} maxLength={12} autoComplete="off" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Opcional"/><span className="mt-1 block text-xs font-normal text-muted">Identifica quem indicou seu restaurante. Se o afiliado tiver promoção, ela é aplicada ao criar a conta.</span></label>
+          {summary&&<div role="status" className="rounded-2xl border border-action bg-peach p-4 text-sm"><p className="font-bold text-action">{summary.title}</p>{summary.lines.map(line=><p key={line} className="mt-1">{line}</p>)}</div>}
           <button type="submit" disabled={loading} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white disabled:opacity-60">{loading?'Criando conta...':'Criar conta e continuar'}<ArrowRight className="h-4 w-4"/></button>
         </form>
       </>}
