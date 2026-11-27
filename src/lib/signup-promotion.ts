@@ -21,3 +21,21 @@ export function promotionSummary(promotion: SignupPromotion | null, planId: stri
   if (promotion.validUntil && /^\d{4}-\d{2}-\d{2}$/.test(promotion.validUntil)) lines.push(`Promoção válida para cadastros até ${promotion.validUntil.split('-').reverse().join('/')}.`);
   return lines.length ? { title: 'Promoção aplicada pelo código', lines } : null;
 }
+
+// Portal do afiliado: a promoção vigente dele, só leitura. Mostra os planos contratáveis
+// (o Pro está "em breve" no lançamento).
+const PARTNER_PLANS: Record<string, string> = { basic: 'Básico', essential: 'Essencial' };
+export function partnerPromotionLines(promotion: SignupPromotion): string[] {
+  const lines: string[] = [];
+  if (promotion.trialDays > 0) lines.push(`${promotion.trialDays} dias grátis para o restaurante. Um teste grátis por CPF/CNPJ.`);
+  const discounted = promotion.discountPercent > 0 && promotion.discountMonths > 0
+    ? promotion.plans.filter(plan => PARTNER_PLANS[plan.planId] && plan.discountedCents !== null) : [];
+  if (discounted.length) {
+    lines.push(`${promotion.discountPercent}% de desconto ${months(promotion.discountMonths)}, no Pix e no cartão:`);
+    for (const plan of discounted) lines.push(`${PARTNER_PLANS[plan.planId]}: ${money(plan.discountedCents!)}, depois ${money(plan.fullCents)}/mês.`);
+  }
+  if (promotion.validUntil && /^\d{4}-\d{2}-\d{2}$/.test(promotion.validUntil)) lines.push(`Válida para cadastros até ${promotion.validUntil.split('-').reverse().join('/')}.`);
+  const commission = [promotion.trialDays > 0 ? 'Durante o teste grátis não há comissão.' : '', discounted.length ? 'Nas mensalidades com desconto, a comissão é calculada sobre o valor com desconto.' : ''].filter(Boolean).join(' ');
+  if (commission) lines.push(commission);
+  return lines;
+}

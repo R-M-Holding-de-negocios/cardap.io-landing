@@ -18,8 +18,7 @@ describe('promoção no cadastro', () => {
     expect(text(summary.lines)).toBe('14 dias grátis. Nada é cobrado agora. Um teste grátis por CPF/CNPJ. R$ 63,20 nas 2 primeiras mensalidades (20% de desconto). Depois, R$ 79,00/mês.');
   });
   it('o desconto vale no Pix e no cartão (decisão revista em 27/11/2026), sem aviso de forma de pagamento', () => {
-    const form = readFileSync('src/lib/signup-promotion.ts', 'utf8');
-    expect(form).not.toMatch(/só no Pix|No Pix|cartão/i);
+    for (const planId of ['basic', 'essential']) expect(text(promotionSummary(promo(), planId)!.lines)).not.toMatch(/Pix|cartão/i);
   });
   it('uma mensalidade, sem teste grátis e com prazo de validade', () => {
     const lines = text(promotionSummary(promo({ trialDays: 0, discountMonths: 1, validUntil: '2026-12-31' }), 'basic')!.lines);

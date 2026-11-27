@@ -6,11 +6,13 @@ import Footer from '@/components/public/Footer';
 import PartnerFinancialSummary from '@/components/partner/PartnerFinancialSummary';
 import PartnerPasswordChange from '@/components/partner/PartnerPasswordChange';
 import PartnerTrafficSummary from '@/components/partner/PartnerTrafficSummary';
+import PartnerPromotion from '@/components/partner/PartnerPromotion';
+import type { SignupPromotion } from '@/lib/signup-promotion';
 import AffiliateLedger from '@/components/partner/AffiliateLedger';
 import PayoutEligibilityNotice from '@/components/partner/PayoutEligibilityNotice';
 
 type Restaurant={name:string;status:string;referredAt:string;earningsCents:number};
-type Dashboard={code:string;restaurantCount:number;linkVisits:number;trialCount:number;activeSubscriptionCount:number;earningsCents:number;balanceCents:number;availableCents:number;paidCents:number;qualifiedRestaurantCount:number;minimumRestaurantCount:number;restaurants:Restaurant[]};
+type Dashboard={code:string;restaurantCount:number;linkVisits:number;trialCount:number;activeSubscriptionCount:number;earningsCents:number;balanceCents:number;availableCents:number;paidCents:number;qualifiedRestaurantCount:number;minimumRestaurantCount:number;restaurants:Restaurant[];promotion?:SignupPromotion|null};
 const money=(cents:number)=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(cents/100);
 
 export default function PartnerPortalPage(){
@@ -25,6 +27,7 @@ export default function PartnerPortalPage(){
   {loading?<p className="text-muted">Carregando...</p>:dashboard?<>
    <div className="flex justify-end"><button onClick={logout} className="font-bold text-action underline">Sair</button></div>
    <section className="rounded-3xl bg-peach border border-outline p-6 space-y-3"><h2 className="font-black text-muted">Seu código de afiliado: {dashboard.code}</h2><p className="text-sm text-muted">Compartilhe o link para que o restaurante se cadastre com sua indicação.</p><div className="flex flex-wrap gap-3 items-center"><code className="break-all text-sm">{link}</code><button type="button" onClick={()=>navigator.clipboard.writeText(link)} className="rounded-xl bg-action px-4 py-2 font-bold">Copiar link</button></div></section>
+   <PartnerPromotion promotion={dashboard.promotion??null}/>
    <section className="rounded-3xl bg-white border border-outline p-6"><h2 className="text-sm font-bold text-muted">Restaurantes indicados</h2><p className="text-3xl font-black">{dashboard.restaurantCount}</p></section>
    <PartnerFinancialSummary earningsCents={dashboard.earningsCents} balanceCents={dashboard.balanceCents} availableCents={dashboard.availableCents} paidCents={dashboard.paidCents}/>
    <PayoutEligibilityNotice qualifiedRestaurantCount={dashboard.qualifiedRestaurantCount} minimumRestaurantCount={dashboard.minimumRestaurantCount}/>
