@@ -1,6 +1,6 @@
 'use client';
 import { ATTENTION_CODES, ATTENTION_LABELS, type AttentionCode } from '@/lib/platform-admin-attention';
-export type RestaurantRow={id:string;name:string|null;subscriptionStatus:string|null;subscriptionPlan:string|null;accessStatus:string;affiliate:string|null;userCount:number;supportCount:number;createdAt:string|null;billingAttention?:'missing_subscription'|null;attention?:string[];ownerName?:string|null;ownerEmail?:string|null;ownerPhone?:string|null};
+export type RestaurantRow={id:string;name:string|null;subscriptionStatus:string|null;subscriptionPlan:string|null;accessStatus:string;affiliate:string|null;userCount:number;supportCount:number;createdAt:string|null;billingAttention?:'missing_subscription'|null;attention?:string[];ownerName?:string|null;ownerEmail?:string|null;ownerPhone?:string|null;usage?:{tables:number;menuItems:number;staff:number;ordersLast7Days:number;lastAccessAt:number|null}};
 // Linha de API antiga traz só `billingAttention`; a atual traz todas as condições em `attention`.
 const marks=(item:RestaurantRow):AttentionCode[]=>{const codes=item.attention||(item.billingAttention?[item.billingAttention]:[]);return ATTENTION_CODES.filter(code=>codes.includes(code));};
 // Contato do dono (decisão do João em 26/11/2026). Linha de API antiga não traz os campos.
