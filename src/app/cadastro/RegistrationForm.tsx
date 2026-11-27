@@ -13,7 +13,7 @@ const plans=[
   {id:'pro',name:'Pro',price:'R$ 149',description:'Atendimento e gestão do restaurante.'},
 ] as const;
 export type SignupPlan=(typeof plans)[number]['id'];
-type PaymentMethod='PIX'|'BOLETO'|'CREDIT_CARD';
+type PaymentMethod='PIX'|'CREDIT_CARD';
 
 export default function RegistrationForm(){
   const search=useSearchParams();
@@ -68,7 +68,7 @@ export default function RegistrationForm(){
             <input type="radio" name="plan" value={plan.id} checked={planId===plan.id} onChange={()=>setPlanId(plan.id)} className="sr-only"/>
             <span className="block font-bold">{plan.name}</span><span className="mt-1 block text-xl font-black">{plan.price}<small className="text-xs font-medium">/mês</small></span><span className="mt-2 block text-xs text-muted">{plan.description}</span>
           </label>)}</div></fieldset>
-          <label className="block text-sm font-bold">Forma de pagamento<select value={paymentMethod} onChange={event=>setPaymentMethod(event.target.value as PaymentMethod)} className="mt-1 min-h-12 w-full rounded-xl border border-outline bg-white p-3"><option value="PIX">Pix</option><option value="BOLETO">Boleto</option><option value="CREDIT_CARD">Cartão de crédito</option></select></label>
+          <label className="block text-sm font-bold">Forma de pagamento<select value={paymentMethod} onChange={event=>setPaymentMethod(event.target.value as PaymentMethod)} className="mt-1 min-h-12 w-full rounded-xl border border-outline bg-white p-3"><option value="PIX">Pix</option><option value="CREDIT_CARD">Cartão de crédito</option></select></label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-bold">Estabelecimento<input name="restaurantName" required maxLength={120} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Nome do restaurante"/></label>
             <label className="block text-sm font-bold">Seu nome<input name="ownerName" required maxLength={120} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Nome completo"/></label>
