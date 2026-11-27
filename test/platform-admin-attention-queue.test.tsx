@@ -8,8 +8,8 @@ import RestaurantTable, { type RestaurantRow } from '@/components/platform-admin
 import { platformAdminPathAllowed } from '@/lib/platform-admin-paths';
 
 const empty: AttentionData = {
-  counts: { charge_failed: 0, missing_subscription: 0, overdue: 0, stalled_signup: 0, open_tickets: 0, payouts_due: 0, payouts_awaiting_transfer: 0 },
-  items: { charge_failed: [], missing_subscription: [], overdue: [], stalled_signup: [] },
+  counts: { charge_failed: 0, missing_subscription: 0, overdue: 0, stalled_signup: 0, price_not_restored: 0, open_tickets: 0, payouts_due: 0, payouts_awaiting_transfer: 0 },
+  items: { charge_failed: [], missing_subscription: [], overdue: [], stalled_signup: [], price_not_restored: [] },
 };
 const row = (overrides: Partial<RestaurantRow>): RestaurantRow => ({
   id: 'rest-1', name: 'Bistrô', subscriptionStatus: 'active', subscriptionPlan: 'basic_v1', accessStatus: 'active',
