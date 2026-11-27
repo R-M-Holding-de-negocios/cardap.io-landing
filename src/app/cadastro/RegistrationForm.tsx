@@ -43,7 +43,7 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
       .catch(()=>{});
     return ()=>controller.abort();
   },[ref]);
-  const summary=promotionSummary(promotion,planId,paymentMethod);
+  const summary=promotionSummary(promotion,planId);
   const [generated,setGenerated]=useState<{email:string;password:string}|null>(null);
 
   // Só na homologação e no desenvolvimento: preenche o formulário com dados fictícios.
