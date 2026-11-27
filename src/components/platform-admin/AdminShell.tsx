@@ -2,7 +2,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 
-const links=[['/admin','Visão geral'],['/admin/restaurants','Restaurantes'],['/admin/asaas-events','Eventos do Asaas'],['/admin/affiliates','Afiliados'],['/admin/payouts','Repasses'],['/admin/support','Atendimento'],['/admin/audit','Auditoria']];
+const links=[['/admin','Visão geral'],['/admin/restaurants','Restaurantes'],['/admin/asaas-events','Eventos do Asaas'],['/admin/health','Saúde do sistema'],['/admin/affiliates','Afiliados'],['/admin/payouts','Repasses'],['/admin/support','Atendimento'],['/admin/audit','Auditoria']];
 export default function AdminShell({email,children}:{email:string;children:ReactNode}){
  async function logout(){await fetch('/api/platform-admin/logout',{method:'POST'});window.location.assign('/admin/login');}
  return <div className="presentation-theme utility-theme min-h-screen bg-cream text-ink">
