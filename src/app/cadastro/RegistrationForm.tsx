@@ -9,8 +9,9 @@ import { signupCompletion, signupEntryUrl, type SignupCompletion, type SignupRes
 import { randomSignupData } from '@/lib/test-signup-data';
 import { promotionSummary, type SignupPromotion } from '@/lib/signup-promotion';
 import { cpfCnpjProblem, normalizeCpfCnpj, passwordProblem } from '@/lib/cpf-cnpj';
+import TermsAcceptance from '@/components/public/TermsAcceptance';
 
-type FieldErrors={cpfCnpj?:string;password?:string};
+type FieldErrors={cpfCnpj?:string;password?:string;acceptTerms?:string};
 
 const plans=[
   {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.',comingSoon:false},
@@ -56,6 +57,7 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
     const form=formRef.current;if(!form)return;
     const data=randomSignupData();
     for(const [name,value] of Object.entries(data)){const field=form.elements.namedItem(name);if(field instanceof HTMLInputElement)field.value=value;}
+    const terms=form.elements.namedItem('acceptTerms');if(terms instanceof HTMLInputElement)terms.checked=true;
     setGenerated({email:data.email,password:data.password});
   }
 
@@ -78,12 +80,14 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
       phone:String(form.get('phone')||''),
       cpfCnpj:normalizeCpfCnpj(String(form.get('cpfCnpj')||'')),
       password:String(form.get('password')||''),
+      acceptTerms:form.get('acceptTerms')==='on',
       planId,paymentMethod,...(ref.trim()?{ref:ref.trim().toUpperCase()}:{})
     };
     try{
       const response=await fetch(apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'});
       const result=await response.json() as SignupResult;
       if((result.field==='cpfCnpj'||result.field==='password')&&typeof result.error==='string'){setFieldErrors({[result.field]:result.error});return;}
+      if(result.field==='acceptTerms'&&typeof result.error==='string'){setFieldErrors({acceptTerms:result.error});return;}
       if(!response.ok||result.success!==true)throw new Error(registrationErrorMessage(result.error));
       // Vai direto ao sistema já logado; no modo de teste mostra antes o e-mail e a senha gerados.
       const entry=signupEntryUrl(result);
@@ -128,6 +132,7 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
           <label className="block text-sm font-bold">Senha de acesso<input name="password" type="password" autoComplete="new-password" required minLength={12} aria-invalid={!!fieldErrors.password} aria-describedby={fieldErrors.password?'password-error':undefined} onInput={()=>setFieldErrors(current=>({...current,password:undefined}))} className={`mt-1 min-h-12 w-full rounded-xl border p-3 ${fieldErrors.password?'border-red-500':'border-outline'}`}/>{fieldErrors.password&&<span id="password-error" role="alert" className="mt-1 block text-xs font-bold text-red-700">{fieldErrors.password}</span>}<span className="mt-1 block text-xs font-normal text-muted">Use ao menos 12 caracteres.</span></label>
           <label className="block text-sm font-bold">Cupom ou código de afiliado<input value={ref} onChange={event=>setRef(event.target.value.toUpperCase())} maxLength={12} autoComplete="off" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Opcional"/><span className="mt-1 block text-xs font-normal text-muted">Identifica quem indicou seu restaurante. Se o afiliado tiver promoção, ela é aplicada ao criar a conta.</span></label>
           {summary&&<div role="status" className="rounded-2xl border border-action bg-peach p-4 text-sm"><p className="font-bold text-action">{summary.title}</p>{summary.lines.map(line=><p key={line} className="mt-1">{line}</p>)}</div>}
+          <TermsAcceptance name="acceptTerms" error={fieldErrors.acceptTerms}/>
           <button type="submit" disabled={loading} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white disabled:opacity-60">{loading?'Criando conta...':'Criar conta e continuar'}<ArrowRight className="h-4 w-4"/></button>
         </form>
       </>}

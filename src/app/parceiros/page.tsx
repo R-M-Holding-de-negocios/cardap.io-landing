@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/public/Navbar';
 import Footer from '@/components/public/Footer';
+import TermsAcceptance from '@/components/public/TermsAcceptance';
 import {
   TrendingUp,
   DollarSign,
@@ -30,6 +31,8 @@ export default function ParceirosPage() {
   const [formPix, setFormPix] = useState('');
   const [formWhatsapp, setFormWhatsapp] = useState('');
   const [formPassword, setFormPassword] = useState('');
+  const [formTerms, setFormTerms] = useState(false);
+  const [termsError, setTermsError] = useState<string | undefined>(undefined);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [applicationError, setApplicationError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -48,9 +51,12 @@ export default function ParceirosPage() {
           pixKey: formPix,
           whatsapp: formWhatsapp,
           password: formPassword,
+          acceptTerms: formTerms,
         }),
       });
       const data = await res.json();
+      setTermsError(data.field === 'acceptTerms' && typeof data.error === 'string' ? data.error : undefined);
+      if (data.field === 'acceptTerms') return;
       if (res.ok && data.success && data.status === 'pending' && typeof data.applicationId === 'string') setApplicationId(data.applicationId);
       else setApplicationError(data.error || 'Não foi possível registrar a candidatura. Tente novamente.');
     } catch (err) {
@@ -249,6 +255,8 @@ export default function ParceirosPage() {
                   <input type="password" autoComplete="new-password" minLength={12} maxLength={72} required value={formPassword} onChange={e=>setFormPassword(e.target.value)} className="mt-1 w-full px-4 py-2.5 rounded-xl border border-outline text-sm text-muted" />
                   <span className="mt-1 block text-xs font-normal">Use ao menos 12 caracteres. O acesso será liberado após aprovação.</span>
                 </label>
+
+                <TermsAcceptance name="acceptTerms" checked={formTerms} onChange={checked => { setFormTerms(checked); setTermsError(undefined); }} error={termsError} />
 
                 <div className="p-3 bg-cream rounded-xl border border-outline text-sm text-muted leading-relaxed">
                   🛡️ <strong>Regra Anti-Fraude:</strong> É terminantemente proibida a autoindicação direta ou indireta de restaurantes pertencentes ao próprio parceiro.
