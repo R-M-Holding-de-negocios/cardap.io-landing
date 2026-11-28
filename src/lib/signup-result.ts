@@ -2,7 +2,7 @@
 // conta em teste grátis pela promoção de um afiliado, ou conta aguardando pagamento.
 import { productUrl } from './product-url';
 
-export type SignupResult = { success?: boolean; error?: unknown; subscriptionStatus?: string; trialEndsAt?: string; entryPass?: string };
+export type SignupResult = { success?: boolean; error?: unknown; field?: string; subscriptionStatus?: string; trialEndsAt?: string; entryPass?: string };
 export type SignupCompletion = { title: string; text: string; action: string; entry?: string | null };
 
 // Passe de entrada (F3-T25): o dono vai do cadastro ao sistema já logado. O passe vai no

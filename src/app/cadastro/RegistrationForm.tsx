@@ -8,6 +8,9 @@ import { registrationApiUrl, registrationErrorMessage } from '@/lib/registration
 import { signupCompletion, signupEntryUrl, type SignupCompletion, type SignupResult } from '@/lib/signup-result';
 import { randomSignupData } from '@/lib/test-signup-data';
 import { promotionSummary, type SignupPromotion } from '@/lib/signup-promotion';
+import { cpfCnpjProblem, normalizeCpfCnpj, passwordProblem } from '@/lib/cpf-cnpj';
+
+type FieldErrors={cpfCnpj?:string;password?:string};
 
 const plans=[
   {id:'basic',name:'Básico',price:'R$ 59',description:'Cardápio digital e pedidos das mesas.',comingSoon:false},
@@ -30,6 +33,7 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
   const [ref,setRef]=useState(initialRef);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState('');
+  const [fieldErrors,setFieldErrors]=useState<FieldErrors>({});
   const [complete,setComplete]=useState<SignupCompletion|null>(null);
   const formRef=useRef<HTMLFormElement>(null);
   const [promotion,setPromotion]=useState<SignupPromotion|null>(null);
@@ -56,20 +60,30 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
   }
 
   async function submit(event:FormEvent<HTMLFormElement>){
-    event.preventDefault();setLoading(true);setError('');
+    event.preventDefault();setError('');
     const form=new FormData(event.currentTarget);
+    // Mesma regra do servidor (F3-T6): confere antes de enviar e mostra o erro embaixo do campo.
+    const problems:FieldErrors={};
+    const documentProblem=cpfCnpjProblem(String(form.get('cpfCnpj')||'')),secretProblem=passwordProblem(String(form.get('password')||''));
+    if(documentProblem)problems.cpfCnpj=documentProblem;
+    if(secretProblem)problems.password=secretProblem;
+    setFieldErrors(problems);
+    const first=(['cpfCnpj','password'] as const).find(name=>problems[name]);
+    if(first){const field=event.currentTarget.elements.namedItem(first);if(field instanceof HTMLInputElement)field.focus();return;}
+    setLoading(true);
     const payload={
       restaurantName:String(form.get('restaurantName')||''),
       ownerName:String(form.get('ownerName')||''),
       email:String(form.get('email')||''),
       phone:String(form.get('phone')||''),
-      cpfCnpj:String(form.get('cpfCnpj')||'').replace(/\D/g,''),
+      cpfCnpj:normalizeCpfCnpj(String(form.get('cpfCnpj')||'')),
       password:String(form.get('password')||''),
       planId,paymentMethod,...(ref.trim()?{ref:ref.trim().toUpperCase()}:{})
     };
     try{
       const response=await fetch(apiUrl,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),credentials:'same-origin'});
       const result=await response.json() as SignupResult;
+      if((result.field==='cpfCnpj'||result.field==='password')&&typeof result.error==='string'){setFieldErrors({[result.field]:result.error});return;}
       if(!response.ok||result.success!==true)throw new Error(registrationErrorMessage(result.error));
       // Vai direto ao sistema já logado; no modo de teste mostra antes o e-mail e a senha gerados.
       const entry=signupEntryUrl(result);
@@ -109,9 +123,9 @@ export default function RegistrationForm({testFill=false}:{testFill?:boolean}){
             <label className="block text-sm font-bold">Seu nome<input name="ownerName" required maxLength={120} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Nome completo"/></label>
             <label className="block text-sm font-bold">E-mail<input name="email" type="email" autoComplete="email" required maxLength={254} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="voce@restaurante.com"/></label>
             <label className="block text-sm font-bold">WhatsApp<input name="phone" type="tel" autoComplete="tel" required className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="(11) 99999-9999"/></label>
-            <label className="block text-sm font-bold">CPF ou CNPJ para cobrança<input name="cpfCnpj" inputMode="numeric" autoComplete="off" required pattern="[0-9./ -]{11,18}" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Documento do responsável pela assinatura"/><span className="mt-1 block text-xs font-normal text-muted">Usado pelo Asaas para emitir a mensalidade.</span></label>
+            <label className="block text-sm font-bold">CPF ou CNPJ para cobrança<input name="cpfCnpj" autoComplete="off" autoCapitalize="characters" required maxLength={18} aria-invalid={!!fieldErrors.cpfCnpj} aria-describedby={fieldErrors.cpfCnpj?'cpfCnpj-error':undefined} onInput={()=>setFieldErrors(current=>({...current,cpfCnpj:undefined}))} className={`mt-1 min-h-12 w-full rounded-xl border p-3 ${fieldErrors.cpfCnpj?'border-red-500':'border-outline'}`} placeholder="Documento do responsável pela assinatura"/>{fieldErrors.cpfCnpj&&<span id="cpfCnpj-error" role="alert" className="mt-1 block text-xs font-bold text-red-700">{fieldErrors.cpfCnpj}</span>}<span className="mt-1 block text-xs font-normal text-muted">Usado pelo Asaas para emitir a mensalidade.</span></label>
           </div>
-          <label className="block text-sm font-bold">Senha de acesso<input name="password" type="password" autoComplete="new-password" required minLength={12} maxLength={72} className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3"/><span className="mt-1 block text-xs font-normal text-muted">Use ao menos 12 caracteres.</span></label>
+          <label className="block text-sm font-bold">Senha de acesso<input name="password" type="password" autoComplete="new-password" required minLength={12} aria-invalid={!!fieldErrors.password} aria-describedby={fieldErrors.password?'password-error':undefined} onInput={()=>setFieldErrors(current=>({...current,password:undefined}))} className={`mt-1 min-h-12 w-full rounded-xl border p-3 ${fieldErrors.password?'border-red-500':'border-outline'}`}/>{fieldErrors.password&&<span id="password-error" role="alert" className="mt-1 block text-xs font-bold text-red-700">{fieldErrors.password}</span>}<span className="mt-1 block text-xs font-normal text-muted">Use ao menos 12 caracteres.</span></label>
           <label className="block text-sm font-bold">Cupom ou código de afiliado<input value={ref} onChange={event=>setRef(event.target.value.toUpperCase())} maxLength={12} autoComplete="off" className="mt-1 min-h-12 w-full rounded-xl border border-outline p-3" placeholder="Opcional"/><span className="mt-1 block text-xs font-normal text-muted">Identifica quem indicou seu restaurante. Se o afiliado tiver promoção, ela é aplicada ao criar a conta.</span></label>
           {summary&&<div role="status" className="rounded-2xl border border-action bg-peach p-4 text-sm"><p className="font-bold text-action">{summary.title}</p>{summary.lines.map(line=><p key={line} className="mt-1">{line}</p>)}</div>}
           <button type="submit" disabled={loading} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 py-3 font-bold text-white disabled:opacity-60">{loading?'Criando conta...':'Criar conta e continuar'}<ArrowRight className="h-4 w-4"/></button>
